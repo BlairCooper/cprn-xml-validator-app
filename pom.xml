@@ -83,6 +83,42 @@
 					<verbose>true</verbose>
 				</configuration>
 			</plugin>
+ 			<plugin>
+				<groupId>org.panteleyev</groupId>
+				<artifactId>jpackage-maven-plugin</artifactId>
+				<version>1.5.0</version>
+
+				<configuration>
+					<name>CPRN XML Validator</name>
+					<appVersion>${project.version}</appVersion>
+					<vendor>cprn.org</vendor>
+					<module>cprn.xml.validator.app/org.cprn.validator.app.Main</module>
+					<destination>target/dist</destination>
+					<runtimeImage>target/maven-jlink/default</runtimeImage>
+					<javaOptions>
+						<option>--enable-preview</option>
+						<option>-Dfile.encoding=UTF-8</option>
+					</javaOptions>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>macos-latestc</id>
+						<configuration>
+							<icon>icons/cprn.icns</icon>
+						</configuration>
+					</execution>
+					<execution>
+						<id>windows-latest</id>
+						<configuration>
+							<icon>icons/cprn.ico</icon>
+							<launcher.file>target/maven-jlink/default/bin/cprnValidateXml.bat</launcher.file>
+							<winMenu>true</winMenu>
+							<winConsole>true</winConsole>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
