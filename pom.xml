@@ -3,7 +3,7 @@
 
 	<groupId>org.cprn</groupId>
 	<artifactId>cprn-xml-validator-app</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>jlink</packaging>
 	<name>CPRN XML Validation Application</name>
 
@@ -33,7 +33,8 @@
 	
 	<scm>
 		<developerConnection>scm:git:https://github.com/BlairCooper/${project.artifactId}.git</developerConnection>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 
 	<dependencies>
 		<dependency>
