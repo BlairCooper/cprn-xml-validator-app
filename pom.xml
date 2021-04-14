@@ -91,8 +91,8 @@
 				<version>1.5.0</version>
 
 				<configuration>
-					<name>CPRN XML Validator</name>
-					<appVersion>${project.version}</appVersion>
+					<name>CprnXmlValidator</name>
+					<appVersion>${release.version}</appVersion>
 					<vendor>cprn.org</vendor>
 					<module>cprn.xml.validator.app/org.cprn.validator.app.Main</module>
 					<destination>target/dist</destination>
@@ -105,7 +105,13 @@
 
 				<executions>
 					<execution>
-						<id>macos-latestc</id>
+						<id>ubuntu-latest</id>
+						<configuration>
+							<icon>icons/cprn.ico</icon>
+						</configuration>
+					</execution>
+					<execution>
+						<id>macos-latest</id>
 						<configuration>
 							<icon>icons/cprn.icns</icon>
 						</configuration>
@@ -114,7 +120,7 @@
 						<id>windows-latest</id>
 						<configuration>
 							<icon>icons/cprn.ico</icon>
-							<launcher.file>target/maven-jlink/default/bin/cprnValidateXml.bat</launcher.file>
+<!-- 							<launcher.file>target/maven-jlink/default/bin/cprnValidateXml.bat</launcher.file> -->
 							<winMenu>true</winMenu>
 							<winConsole>true</winConsole>
 						</configuration>

@@ -14,6 +14,7 @@ jobs:
 
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_version: ${{ steps.prepare-release.outputs.project_version }}
 
     steps:
     - name: Checkout code
@@ -41,7 +42,12 @@ jobs:
 
     - name: Build with Maven
       id: prepare-release
-      run: mvn -B release:prepare release:perform --file pom.xml
+      run: |
+        # From pom.xml: grab the "artifactId" element
+        echo "::set-output name=project_name::$(sed -n -e 's/.*<artifactId>\(.*\)<\/artifactId>.*/\1/p' <<< cat pom.xml)"
+        # From pom.xml: grab the "version" element minus the -SNAPSHOT
+        echo "::set-output name=project_version::$(sed -n -e 's/.*<version>\(.*\)-SNAPSHOT<\/version>.*/\1/p' <<< cat pom.xml)"
+        mvn -B release:prepare release:perform --file pom.xml
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
@@ -51,8 +57,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.prepare-release.outputs.tag }}
-        release_name: Release ${{ steps.prepare-release.outputs.tag }}
+        tag_name: v${{ steps.prepare-release.outputs.project_version }}
+        release_name: Release ${{ steps.build-vars.outputs.project_version }}
 
 
   release_assets:
@@ -91,7 +97,7 @@ jobs:
       # Do JPackage here
       - name: Build with Maven
         id: create-package
-        run: mvn -B package jpackage:jpackage@${{ matrix.config.os }} --file pom.xml
+        run: mvn -Drelease.version=${{ needs.build.outputs.release_version }} -B package jpackage:jpackage@${{ matrix.config.os }} --file pom.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -102,13 +108,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.build.outputs.upload_url }}
-          # This is how it will be named on the release page. Put hatever name
+          # This is how it will be named on the release page. Put whatever name
           # you like, remember that they need to be different for each platform.
           # You can choose any build matrix parameters. For Rust I use the
           # target triple.
-          asset_name: CprnXmlValidator-${{ matrix.config.os }}
+          asset_name: CprnXmlValidator-${{ matrix.config.os }}-${{ needs.build.outputs.project_version }}
           # The path to the file you want to upload.
-          asset_path: ./path/to/your/file
+          asset_path: ./target/dist/CprnXmlValidator-${{ needs.build.outputs.project_version }}*
           # probably you will need to change it, but most likely you are
           # uploading a binary file
           asset_content_type: application/octet-stream
