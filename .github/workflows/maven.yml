@@ -97,7 +97,7 @@ jobs:
       # Do JPackage here
       - name: Build with Maven
         id: create-package
-        run: mvn -Drelease_version=${{ needs.build.outputs.release_version }} -B package jpackage:jpackage@${{ matrix.config.os }} --file pom.xml
+        run: mvn -B package jpackage:jpackage@${{ matrix.config.os }} -Drelease_version=${{ needs.build.outputs.release_version }} --file pom.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
