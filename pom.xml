@@ -92,7 +92,7 @@
 
 				<configuration>
 					<name>CprnXmlValidator</name>
-					<appVersion>${release.version}</appVersion>
+					<appVersion>${release_version}</appVersion>
 					<vendor>cprn.org</vendor>
 					<module>cprn.xml.validator.app/org.cprn.validator.app.Main</module>
 					<destination>target/dist</destination>
@@ -107,13 +107,13 @@
 					<execution>
 						<id>ubuntu-latest</id>
 						<configuration>
-							<icon>icons/cprn.ico</icon>
+							<icon>icons/cprn.png</icon>
 						</configuration>
 					</execution>
 					<execution>
 						<id>macos-latest</id>
 						<configuration>
-							<icon>icons/cprn.icns</icon>
+<!--							<icon>icons/cprn.icns</icon>	-->
 						</configuration>
 					</execution>
 					<execution>

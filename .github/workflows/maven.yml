@@ -58,7 +58,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: v${{ steps.prepare-release.outputs.project_version }}
-        release_name: Release ${{ steps.build-vars.outputs.project_version }}
+        release_name: Release ${{ steps.prepare-release.outputs.project_version }}
 
 
   release_assets:
@@ -97,7 +97,7 @@ jobs:
       # Do JPackage here
       - name: Build with Maven
         id: create-package
-        run: mvn -Drelease.version=${{ needs.build.outputs.release_version }} -B package jpackage:jpackage@${{ matrix.config.os }} --file pom.xml
+        run: mvn -Drelease_version=${{ needs.build.outputs.release_version }} -B package jpackage:jpackage@${{ matrix.config.os }} --file pom.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
