@@ -97,7 +97,9 @@ jobs:
       # Do JPackage here
       - name: Build with Maven
         id: create-package
-        run: mvn -B package jpackage:jpackage@${{ matrix.config.os }} -Drelease_version=${{ needs.build.outputs.release_version }} --file pom.xml
+        run: |
+          #JLink will get run automatically so don't need package target
+          mvn -B jpackage:jpackage@${{ matrix.config.os }} -Drelease_version="${{ needs.build.outputs.release_version }}" --file pom.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
