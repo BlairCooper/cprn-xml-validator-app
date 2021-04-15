@@ -12,7 +12,6 @@ jobs:
   # Build and test code
   build-test:
     name: Build and Test
-    id: build-test
     runs-on: ubuntu-latest
 
     outputs:
