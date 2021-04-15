@@ -76,7 +76,7 @@ jobs:
     - name: Build distribution
       run: |
         mvn -B package --file pom.xml
-        jpackage --verbose --app-version 0.0.1 "@jpackage/jpackage.cfg" "@jpackage/jpackage-windows.cfg"
+        jpackage --verbose --app-version 0.0.1 "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux-deb.cfg"
 
     # SAVE INSTALLER
     - name: Upload installer
