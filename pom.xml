@@ -4,7 +4,7 @@
 	<groupId>org.cprn</groupId>
 	<artifactId>cprn-xml-validator-app</artifactId>
 	<version>1.0.7-SNAPSHOT</version>
-	<packaging>jlink</packaging>
+	<packaging>jar</packaging>
 	<name>CPRN XML Validation Application</name>
 
 	<properties>
@@ -71,6 +71,7 @@
 					</archive>
 				</configuration>
 			</plugin>
+<!--			
 			<plugin>
 				<artifactId>maven-jlink-plugin</artifactId>
 				<version>3.1.0</version>
@@ -98,7 +99,6 @@
 					<destination>target/dist</destination>
 					<runtimeImage>target/maven-jlink/default</runtimeImage>
 					<javaOptions>
-						<option>--enable-preview</option>
 						<option>-Dfile.encoding=UTF-8</option>
 					</javaOptions>
 				</configuration>
@@ -113,20 +113,19 @@
 					<execution>
 						<id>macos-latest</id>
 						<configuration>
-<!--							<icon>icons/cprn.icns</icon>	-->
 						</configuration>
 					</execution>
 					<execution>
 						<id>windows-latest</id>
 						<configuration>
 							<icon>icons/cprn.ico</icon>
-<!-- 							<launcher.file>target/maven-jlink/default/bin/cprnValidateXml.bat</launcher.file> -->
 							<winMenu>true</winMenu>
 							<winConsole>true</winConsole>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+  -->			
 		</plugins>
 	</build>
 
