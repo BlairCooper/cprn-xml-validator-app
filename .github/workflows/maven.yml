@@ -239,7 +239,7 @@ jobs:
       run: |
         mvn -B package --file pom.xml
         jpackage --verbose --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-windows.cfg"
-        ren ./target/dist/CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.msi ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
+        ren .\target\dist\CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.msi cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
 
     # SAVE INSTALLER
     - name: Upload installer
