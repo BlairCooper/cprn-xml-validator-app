@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      release_version: ${{ steps.rev-version.outputs.project_version }}
+      release_version: ${{ steps.get-version.outputs.project_version }}
 
     steps:
     - name: Checkout code
@@ -48,14 +48,18 @@ jobs:
         git config user.email "actions@github.com"
         git config user.name "GitHub Actions"
 
-    # Build and test to ensure it's worth continuing
+    # Get version number from POM
+    - name: Get Version
+      id: get-version
+      run: echo "::set-output name=project_version::$(sed -n -e 's/.*<version>\(.*\)-SNAPSHOT<\/version>.*/\1/p' <<< cat pom.xml)"
+
+    # Rev the version number for the next build
     - name: Rev Version
       id: rev-version
       run: |
-        echo "::set-output name=project_version::$(sed -n -e 's/.*<version>\(.*\)-SNAPSHOT<\/version>.*/\1/p' <<< cat pom.xml)"
         mvn -B release:update-versions --file pom.xml
         git add pom.xml
-        echo -n "Rev to version ${{ steps.rev-version.outputs.project_version }}" | git commit -F -
+        echo -n "Rev version to $(sed -n -e 's/.*<version>\(.*\)-SNAPSHOT<\/version>.*/\1/p' <<< cat pom.xml)" | git commit -F -
 #        git push
 #        echo "version-commit-ref=$(git show-ref --heads -s)" >>build.properties
       env:
