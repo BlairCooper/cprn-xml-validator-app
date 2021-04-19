@@ -109,7 +109,7 @@ jobs:
 
   build-mac-installer:
     name: Build Macintosh Installer
-    runs-on: mac-latest
+    runs-on: macos-latest
     needs: [build-test]
 
     steps:
