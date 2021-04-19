@@ -66,7 +66,7 @@ jobs:
 
 
 
-  build-linux-installer:
+  build-linux-deb-installer:
     name: Build Linux Installer on Ubuntu
     runs-on: ubuntu-latest
     needs: [build-test]
@@ -95,13 +95,59 @@ jobs:
     - name: Build distribution
       run: |
         mvn -B package --file pom.xml
-        jpackage --verbose --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
+        jpackage --verbose --type deb --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
+        mv cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
 
     # SAVE INSTALLER
     - name: Upload installer
       uses: actions/upload-artifact@v2
       with:
-        path: ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb
+        path: ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}.deb
+        name: linux-installer
+        retention-days: 1
+
+
+
+  build-linux-rpm-installer:
+    name: Build Linux RPM Installer on Ubuntu
+    runs-on: ubuntu-latest
+    needs: [build-test]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 15
+      uses: actions/setup-java@v1
+      with:
+        java-version: 15
+
+    # Allows access to our other private repos for dependancies        
+    - name: Setup Maven Settings
+      uses: s4u/maven-settings-action@v2.4.0
+      with:
+        servers: |
+          [{
+              "id": "maven.github.blair",
+              "username": "${{ secrets.USER_PACKAGE_READ }}",
+              "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
+          }]
+
+    # BUILD FOR DISTRIBUTION
+    - name: Build distribution
+      run: |
+        mvn -B package --file pom.xml
+        jpackage --verbose --type rpm --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
+        pwd
+        ls -alR ./target/dist/
+        mv ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.rpm ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.rpm
+        ls -alR ./target/dist/
+
+    # SAVE INSTALLER
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}.rpm
         name: linux-installer
         retention-days: 1
 
@@ -132,18 +178,34 @@ jobs:
               "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
           }]
 
+    # Create the icon set for use by the application
+    - name: Create Icon Set
+      run: |
+        mkdir icons.iconset
+        sips -z 512 512   icons/cprn-icon1024x1024.png --out icons.iconset/icon_512x512.png
+        cp icons/cprn-icon1024x1024.png icons.iconset/icon_512x512@2x.png
+        sips -z 512 512   icons/cprn-icon1024x1024.png --out icons.iconset/icon_256x256@2x.png
+        sips -z 256 256   icons/cprn-icon1024x1024.png --out icons.iconset/icon_256x256.png
+        sips -z 256 256   icons/cprn-icon1024x1024.png --out icons.iconset/icon_128x128@2x.png
+        sips -z 128 128   icons/cprn-icon1024x1024.png --out icons.iconset/icon_128x128.png
+        sips -z 64 64     icons/cprn-icon1024x1024.png --out icons.iconset/icon_32x32@2x.png
+        sips -z 32 32     icons/cprn-icon1024x1024.png --out icons.iconset/icon_32x32.png
+        sips -z 32 32     icons/cprn-icon1024x1024.png --out icons.iconset/icon_16x16@2x.png
+        sips -z 16 16     icons/cprn-icon1024x1024.png --out icons.iconset/icon_16x16.png
+        iconutil -c icons/cprn.icns icons.iconset
+        rm -R icons.iconset
+
     # BUILD FOR DISTRIBUTION
     - name: Build distribution
       run: |
         mvn -B package --file pom.xml
         jpackage --verbose --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-mac.cfg"
-        ls -alR ./target/dist/
 
     # SAVE INSTALLER
     - name: Upload installer
       uses: actions/upload-artifact@v2
       with:
-        path: ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb
+        path: ./target/dist/CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.dmg
         name: mac-installer
         retention-days: 1
 
@@ -193,7 +255,7 @@ jobs:
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
-    needs: [build-test, build-linux-installer, build-mac-installer, build-windows-installer]
+    needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-installer]
 
     steps:
     # DOWNLOAD INSTALLERS
@@ -215,8 +277,8 @@ jobs:
     - name: Rename downloaded files
       run: |
         ls -alR
-        mv cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
-        ls -alR
+#        mv cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
+#        ls -alR
 
     # CREATE GITHUB RELEASE AND ADD ASSETS
     - name: Create GitHub release
@@ -246,8 +308,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: cprn-xml-validator-mac-${{ needs.build-test.outputs.release_version }}.deb
-        asset_name: cprn-xml-validator-mac-${{ needs.build-test.outputs.release_version }}.deb
+        asset_path: CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.dmg
+        asset_name: CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.dmg
         asset_content_type: application/x-binary
 
     - name: Release Windows installer
