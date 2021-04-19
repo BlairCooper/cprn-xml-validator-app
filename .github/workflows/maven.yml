@@ -52,15 +52,10 @@ jobs:
     - name: Rev Version
       id: rev-version
       run: |
-        mvn -B release:update-versions --file pom.xml
         echo "::set-output name=project_version::$(sed -n -e 's/.*<version>\(.*\)-SNAPSHOT<\/version>.*/\1/p' <<< cat pom.xml)"
-        echo "Git status after version update"
-        git status
-        git diff
+        mvn -B release:update-versions --file pom.xml
         git add pom.xml
-        git status
-        echo -n "Rev to version ${{ steps.get-version-number.outputs.release-version }}" | git commit -F -
-        git status
+        echo -n "Rev to version ${{ steps.rev-version.outputs.project_version }}" | git commit -F -
 #        git push
 #        echo "version-commit-ref=$(git show-ref --heads -s)" >>build.properties
       env:
