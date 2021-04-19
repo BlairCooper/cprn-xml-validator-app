@@ -96,7 +96,7 @@ jobs:
       run: |
         mvn -B package --file pom.xml
         jpackage --verbose --type deb --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
-        mv cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
+        mv ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
 
     # SAVE INSTALLER
     - name: Upload installer
@@ -140,14 +140,14 @@ jobs:
         jpackage --verbose --type rpm --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
         pwd
         ls -alR ./target/dist/
-        mv ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.rpm ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.rpm
+        mv ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}-1.x86_64.rpm ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.rpm
         ls -alR ./target/dist/
 
     # SAVE INSTALLER
     - name: Upload installer
       uses: actions/upload-artifact@v2
       with:
-        path: ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}.rpm
+        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.rpm
         name: linux-installer
         retention-days: 1
 
@@ -182,8 +182,8 @@ jobs:
     - name: Create Icon Set
       run: |
         mkdir icons.iconset
-        sips -z 512 512   icons/cprn-icon1024x1024.png --out icons.iconset/icon_512x512.png
         cp icons/cprn-icon1024x1024.png icons.iconset/icon_512x512@2x.png
+        sips -z 512 512   icons/cprn-icon1024x1024.png --out icons.iconset/icon_512x512.png
         sips -z 512 512   icons/cprn-icon1024x1024.png --out icons.iconset/icon_256x256@2x.png
         sips -z 256 256   icons/cprn-icon1024x1024.png --out icons.iconset/icon_256x256.png
         sips -z 256 256   icons/cprn-icon1024x1024.png --out icons.iconset/icon_128x128@2x.png
@@ -192,7 +192,7 @@ jobs:
         sips -z 32 32     icons/cprn-icon1024x1024.png --out icons.iconset/icon_32x32.png
         sips -z 32 32     icons/cprn-icon1024x1024.png --out icons.iconset/icon_16x16@2x.png
         sips -z 16 16     icons/cprn-icon1024x1024.png --out icons.iconset/icon_16x16.png
-        iconutil -c icons/cprn.icns icons.iconset
+        iconutil -c icns -o icons/cprn.icns icons.iconset
         rm -R icons.iconset
 
     # BUILD FOR DISTRIBUTION
