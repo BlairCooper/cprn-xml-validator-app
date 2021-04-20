@@ -11,8 +11,6 @@ public class Main {
 		if (args.length != 0) {
 			int fileCnt = 0;
 
-			System.setProperty("http.agent", "Chrome");	// Needed so server will accept our request and not return 403
-			
 			File src = new File(args[0]);
 			
 			if (src.isDirectory()) {
