@@ -91,6 +91,11 @@ jobs:
               "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
           }]
 
+    # Create the icon set for use by the application
+    - name: Create Icon Set
+      run: |
+        convert -background transparent icons/cprn-icon1024x1024.png -define icon:auto-resize=16,32,48,64,128,256 -compress zip icons/cprn-lnx.ico
+
     # BUILD FOR DISTRIBUTION
     - name: Build distribution
       run: |
@@ -132,6 +137,11 @@ jobs:
               "username": "${{ secrets.USER_PACKAGE_READ }}",
               "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
           }]
+
+    # Create the icon set for use by the application
+    - name: Create Icon Set
+      run: |
+        convert -background transparent icons/cprn-icon1024x1024.png -define icon:auto-resize=16,32,48,64,128,256 -compress zip icons/cprn-lnx.ico
 
     # BUILD FOR DISTRIBUTION
     - name: Build distribution
