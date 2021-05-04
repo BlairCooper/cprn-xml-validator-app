@@ -39,13 +39,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.cprn</groupId>
-			<artifactId>cprn-java-library</artifactId>
-			<version>1.0.15</version>
-		</dependency>
-		<dependency>
-			<groupId>org.cprn</groupId>
 			<artifactId>cprn-xml-validator</artifactId>
-			<version>1.0.9</version>
+			<version>1.0.10</version>
 		</dependency>
 	</dependencies>
 
