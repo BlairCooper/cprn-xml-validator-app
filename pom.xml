@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>org.cprn</groupId>
 			<artifactId>cprn-xml-validator</artifactId>
-			<version>1.0.13</version>
+			<version>1.0.17</version>
 		</dependency>
 	</dependencies>
 
