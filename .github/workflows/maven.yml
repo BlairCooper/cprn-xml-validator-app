@@ -261,10 +261,57 @@ jobs:
 
 
 
+  build-windows-package:
+    name: Build Package on Windows
+    runs-on: windows-latest
+    needs: [build-test]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 15
+
+    # Allows access to our other private repos for dependancies        
+    - name: Setup Maven Settings
+      uses: s4u/maven-settings-action@v2.4.0
+      with:
+        servers: |
+          [{
+              "id": "maven.github.blair",
+              "username": "${{ secrets.USER_PACKAGE_READ }}",
+              "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
+          }]
+
+    # BUILD FOR DISTRIBUTION
+    - name: Build distribution
+      run: |
+        mvn -B package --file pom.xml
+        jpackage --verbose --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-windows-image.cfg"
+#        ren .\target\dist\CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.msi cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
+
+    - name: Zip App Image
+      uses: papeloto/action-zip@v1
+      with:
+        files: ./target/dist/CprnXmlValidator
+        dest: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip
+    
+    # SAVE INSTALLER
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip
+        name: windows-app-image
+        retention-days: 1
+
+
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
-    needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-installer]
+    needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-installer, build-windows-package]
 
     steps:
     # DOWNLOAD INSTALLERS
@@ -287,6 +334,11 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: windows-installer
+
+    - name: Download Windows package
+      uses: actions/download-artifact@v2
+      with:
+        name: windows-app-image
 
     - name: Rename downloaded files
       run: |
@@ -344,4 +396,14 @@ jobs:
         upload_url: ${{ steps.create-release.outputs.upload_url }}
         asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
         asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
-        asset_content_type: application/x-binary          
+        asset_content_type: application/x-binary
+
+    - name: Release Windows App Image
+      uses: actions/upload-release-asset@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create-release.outputs.upload_url }}
+        asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip
+        asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip
+        asset_content_type: application/x-binary
