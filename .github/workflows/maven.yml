@@ -21,14 +21,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up JDK 15
-      uses: actions/setup-java@v1
+    - name: Set up JDK
+      uses: actions/setup-java@v2
       with:
-        java-version: 15
-
-    # Allows access to our other private repos for dependancies        
-    - name: Setup Maven Settings
-      uses: s4u/maven-settings-action@v2.4.0
+        java-version: '16'
+        distribution: 'adopt'
+        cache: maven
+         # Allows access to our other private repos for dependancies         - name: Setup Maven Settings
+      uses: s4u/maven-settings-action@v2.4.1
       with:
         servers: |
           [{
@@ -75,14 +75,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up JDK 15
-      uses: actions/setup-java@v1
+    - name: Set up JDK
+      uses: actions/setup-java@v2
       with:
-        java-version: 15
-
-    # Allows access to our other private repos for dependancies        
-    - name: Setup Maven Settings
-      uses: s4u/maven-settings-action@v2.4.0
+        java-version: '16'
+        distribution: 'adopt'
+        cache: maven
+         # Allows access to our other private repos for dependancies         - name: Setup Maven Settings
+      uses: s4u/maven-settings-action@v2.4.1
       with:
         servers: |
           [{
@@ -122,13 +122,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up JDK 15
-      uses: actions/setup-java@v1
+    - name: Set up JDK
+      uses: actions/setup-java@v2
       with:
-        java-version: 15
-
-    # Allows access to our other private repos for dependancies        
-    - name: Setup Maven Settings
+        java-version: '16'
+        distribution: 'adopt'
+        cache: maven
+         # Allows access to our other private repos for dependancies         - name: Setup Maven Settings
       uses: s4u/maven-settings-action@v2.4.0
       with:
         servers: |
@@ -169,14 +169,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up JDK 15
-      uses: actions/setup-java@v1
+    - name: Set up JDK
+      uses: actions/setup-java@v2
       with:
-        java-version: 15
-
-    # Allows access to our other private repos for dependancies        
-    - name: Setup Maven Settings
-      uses: s4u/maven-settings-action@v2.4.0
+        java-version: '16'
+        distribution: 'adopt'
+        cache: maven
+          # Allows access to our other private repos for dependancies          - name: Setup Maven Settings
+      uses: s4u/maven-settings-action@v2.4.1
       with:
         servers: |
           [{
@@ -219,65 +219,25 @@ jobs:
 
 
 
-  build-windows-installer:
-    name: Build Installer on Windows
+  build-windows-app-image:
+    name: Build Windows app image
     runs-on: windows-latest
     needs: [build-test]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Setup JDK
-      uses: actions/setup-java@v1
       with:
-        java-version: 15
+        submodules: 'true'
 
-    # Allows access to our other private repos for dependancies        
-    - name: Setup Maven Settings
-      uses: s4u/maven-settings-action@v2.4.0
+    - name: Set up JDK
+      uses: actions/setup-java@v2
       with:
-        servers: |
-          [{
-              "id": "maven.github.blair",
-              "username": "${{ secrets.USER_PACKAGE_READ }}",
-              "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
-          }]
-
-    # BUILD FOR DISTRIBUTION
-    - name: Build distribution
-      run: |
-        mvn -B package --file pom.xml
-        jpackage --verbose --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-windows.cfg"
-        ren .\target\dist\CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.msi cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
-
-    # SAVE INSTALLER
-    - name: Upload installer
-      uses: actions/upload-artifact@v2
-      with:
-        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
-        name: windows-installer
-        retention-days: 1
-
-
-
-  build-windows-package:
-    name: Build Package on Windows
-    runs-on: windows-latest
-    needs: [build-test]
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Setup JDK
-      uses: actions/setup-java@v1
-      with:
-        java-version: 15
-
-    # Allows access to our other private repos for dependancies        
-    - name: Setup Maven Settings
-      uses: s4u/maven-settings-action@v2.4.0
+        java-version: '16'
+        distribution: 'adopt'
+        cache: maven
+          # Allows access to our other private repos for dependancies          - name: Setup Maven Settings
+      uses: s4u/maven-settings-action@v2.4.1
       with:
         servers: |
           [{
@@ -291,16 +251,24 @@ jobs:
       run: |
         mvn -B package --file pom.xml
         jpackage --verbose --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-windows-image.cfg"
-#        ren .\target\dist\CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.msi cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
+        attrib -R ./target/dist/CprnXmlValidator/*
+
+    - name: Sign executable
+#      uses: DanaBear/code-sign-action@v4
+      uses: ./.github/actions/code-sign-action
+      with:
+        certificate: '${{ secrets.WINDOWS_CERT }}'
+        certificatename: '${{ secrets.WINDOWS_CERT_NAME }}'
+        folder: './target/dist/OrionDataClient'
+        password: '${{ secrets.WINDOWS_KEY }}'
+        timestampUrl: 'http://timestamp.sectigo.com'
 
     - name: Zip App Image
-      uses: papeloto/action-zip@v1
-      with:
-        files: ./target/dist/CprnXmlValidator
-        dest: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip
-    
+      run: |
+        Compress-Archive -Path ./target/dist/CprnXmlValidator/* -DestinationPath ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip
+
     # SAVE INSTALLER
-    - name: Upload installer
+    - name: Upload Windows app image
       uses: actions/upload-artifact@v2
       with:
         path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip
@@ -308,10 +276,69 @@ jobs:
         retention-days: 1
 
 
+
+  build-windows-installer:
+    name: Build Installer on Windows
+    runs-on: windows-latest
+    needs: [build-test, build-windows-app-image]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: 'true'
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '16'
+        distribution: 'adopt'
+        cache: maven
+          # Allows access to our other private repos for dependancies          - name: Setup Maven Settings
+      uses: s4u/maven-settings-action@v2.4.1
+      with:
+        servers: |
+          [{
+              "id": "maven.github.blair",
+              "username": "${{ secrets.USER_PACKAGE_READ }}",
+              "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
+          }]
+
+    - name: Download Windows app image
+      uses: actions/download-artifact@v2
+      with:
+        name: windows-app-image
+
+    # BUILD FOR DISTRIBUTION
+    - name: Build distribution
+      run: |
+        Expand-Archive -Path ./cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip -DestinationPath ./app-image
+        jpackage --app-image ./app-image --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-windows.cfg"
+        ren ./target/dist/CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.msi cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
+        attrib -R ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
+
+    - name: Sign msi
+#      uses: DanaBear/code-sign-action@v4
+      uses: ./.github/actions/code-sign-action
+      with:
+        certificate: '${{ secrets.WINDOWS_CERT }}'
+        certificatename: '${{ secrets.WINDOWS_CERT_NAME }}'
+        folder: './target/dist/'
+        password: '${{ secrets.WINDOWS_KEY }}'
+        timestampUrl: 'http://timestamp.sectigo.com'
+          # SAVE INSTALLER
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
+        name: windows-installer
+        retention-days: 1
+
+
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
-    needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-installer, build-windows-package]
+    needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-app-image, build-windows-installer]
 
     steps:
     # DOWNLOAD INSTALLERS
