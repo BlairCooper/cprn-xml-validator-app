@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>org.cprn</groupId>
 			<artifactId>cprn-xml-validator</artifactId>
-			<version>1.0.17</version>
+			<version>1.0.18</version>
 		</dependency>
 	</dependencies>
 
@@ -48,7 +48,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>3.9.0</version>
 			</plugin>		
 			<plugin>
 		    	<artifactId>maven-surefire-plugin</artifactId>
@@ -57,7 +57,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.2.2</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -71,7 +71,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.1.2</version>
+				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
@@ -88,61 +88,6 @@
 					</execution>
 				</executions>
 			</plugin>
-<!--			
-			<plugin>
-				<artifactId>maven-jlink-plugin</artifactId>
-				<version>3.1.0</version>
-				<extensions>true</extensions>
-				<configuration>
-					<launcher>cprnValidateXml=cprn.xml.validator.app/org.cprn.validator.app.Main</launcher>
-					<launcherTemplateScript>cprnValidateXml</launcherTemplateScript>
-					<mainModule>cprn.xml.validator.app</mainModule>
-					<mainClass>org.cprn.validator.app.Main</mainClass>
-					<noHeaderFiles>true</noHeaderFiles>
-					<noManPages>true</noManPages>
-					<verbose>true</verbose>
-				</configuration>
-			</plugin>
- 			<plugin>
-				<groupId>org.panteleyev</groupId>
-				<artifactId>jpackage-maven-plugin</artifactId>
-				<version>1.5.0</version>
-
-				<configuration>
-					<name>CprnXmlValidator</name>
-					<appVersion>${release_version}</appVersion>
-					<vendor>cprn.org</vendor>
-					<module>cprn.xml.validator.app/org.cprn.validator.app.Main</module>
-					<destination>target/dist</destination>
-					<runtimeImage>target/maven-jlink/default</runtimeImage>
-					<javaOptions>
-						<option>-Dfile.encoding=UTF-8</option>
-					</javaOptions>
-				</configuration>
-
-				<executions>
-					<execution>
-						<id>ubuntu-latest</id>
-						<configuration>
-							<icon>icons/cprn.png</icon>
-						</configuration>
-					</execution>
-					<execution>
-						<id>macos-latest</id>
-						<configuration>
-						</configuration>
-					</execution>
-					<execution>
-						<id>windows-latest</id>
-						<configuration>
-							<icon>icons/cprn.ico</icon>
-							<winMenu>true</winMenu>
-							<winConsole>true</winConsole>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-  -->			
 		</plugins>
 	</build>
 
