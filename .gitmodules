@@ -1,0 +1,3 @@
+[submodule ".github/actions/code-sign-action"]
+	path = .github/actions/code-sign-action
+	url = https://github.com/Dana-Prajea/code-sign-action.git
