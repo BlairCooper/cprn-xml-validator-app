@@ -67,6 +67,7 @@ jobs:
 
 
   build-linux-deb-installer:
+    if: ${{ false }}  # disable for now
     name: Build Linux DEB Installer on Ubuntu
     runs-on: ubuntu-latest
     needs: [build-test]
@@ -114,6 +115,7 @@ jobs:
 
 
   build-linux-rpm-installer:
+    if: ${{ false }}  # disable for now
     name: Build Linux RPM Installer on Ubuntu
     runs-on: ubuntu-latest
     needs: [build-test]
@@ -161,6 +163,7 @@ jobs:
 
 
   build-mac-installer:
+    if: ${{ false }}  # disable for now
     name: Build Macintosh Installer
     runs-on: macos-latest
     needs: [build-test]
@@ -278,6 +281,7 @@ jobs:
 
 
   build-windows-installer:
+    if: ${{ false }}  # disable for now
     name: Build Installer on Windows
     runs-on: windows-latest
     needs: [build-test, build-windows-app-image]
@@ -336,6 +340,7 @@ jobs:
 
 
   create-release:
+    if: ${{ false }}  # disable for now
     name: Create Release
     runs-on: ubuntu-latest
     needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-app-image, build-windows-installer]
