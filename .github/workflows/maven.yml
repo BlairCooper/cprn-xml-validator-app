@@ -27,7 +27,9 @@ jobs:
         java-version: '16'
         distribution: 'adopt'
         cache: maven
-         # Allows access to our other private repos for dependancies         - name: Setup Maven Settings
+         # Allows access to our other private repos for dependancies
+         
+    - name: Setup Maven Settings
       uses: s4u/maven-settings-action@v2.4.1
       with:
         servers: |
@@ -82,7 +84,9 @@ jobs:
         java-version: '16'
         distribution: 'adopt'
         cache: maven
-         # Allows access to our other private repos for dependancies         - name: Setup Maven Settings
+         # Allows access to our other private repos for dependancies
+         
+    - name: Setup Maven Settings
       uses: s4u/maven-settings-action@v2.4.1
       with:
         servers: |
@@ -130,7 +134,9 @@ jobs:
         java-version: '16'
         distribution: 'adopt'
         cache: maven
-         # Allows access to our other private repos for dependancies         - name: Setup Maven Settings
+         # Allows access to our other private repos for dependancies
+
+    - name: Setup Maven Settings
       uses: s4u/maven-settings-action@v2.4.0
       with:
         servers: |
@@ -178,7 +184,9 @@ jobs:
         java-version: '16'
         distribution: 'adopt'
         cache: maven
-          # Allows access to our other private repos for dependancies          - name: Setup Maven Settings
+          # Allows access to our other private repos for dependancies
+
+    - name: Setup Maven Settings
       uses: s4u/maven-settings-action@v2.4.1
       with:
         servers: |
@@ -239,7 +247,9 @@ jobs:
         java-version: '16'
         distribution: 'adopt'
         cache: maven
-          # Allows access to our other private repos for dependancies          - name: Setup Maven Settings
+          # Allows access to our other private repos for dependancies
+
+    - name: Setup Maven Settings
       uses: s4u/maven-settings-action@v2.4.1
       with:
         servers: |
@@ -298,7 +308,9 @@ jobs:
         java-version: '16'
         distribution: 'adopt'
         cache: maven
-          # Allows access to our other private repos for dependancies          - name: Setup Maven Settings
+          # Allows access to our other private repos for dependancies
+
+    - name: Setup Maven Settings
       uses: s4u/maven-settings-action@v2.4.1
       with:
         servers: |
@@ -330,7 +342,8 @@ jobs:
         folder: './target/dist/'
         password: '${{ secrets.WINDOWS_KEY }}'
         timestampUrl: 'http://timestamp.sectigo.com'
-          # SAVE INSTALLER
+
+    # SAVE INSTALLER
     - name: Upload installer
       uses: actions/upload-artifact@v2
       with:
