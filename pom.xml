@@ -64,7 +64,7 @@
 							<mainClass>org.cprn.validator.app.Main</mainClass>
 						</manifest>
 					</archive>
-			        <outputDirectory>${project.build.directory}/libs</outputDirectory>
+			        <outputDirectory>${project.build.directory}/app</outputDirectory>
 				</configuration>
 			</plugin>
 			<!-- Copy our dependencies to the libs folder -->
@@ -80,7 +80,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}/libs</outputDirectory>
+							<outputDirectory>${project.build.directory}/app</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
