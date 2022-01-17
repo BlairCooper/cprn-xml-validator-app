@@ -27,7 +27,9 @@ jobs:
         java-version: '16'
         distribution: 'adopt'
         cache: maven
-         # Allows access to our other private repos for dependancies         - name: Setup Maven Settings
+         # Allows access to our other private repos for dependancies
+         
+    - name: Setup Maven Settings
       uses: s4u/maven-settings-action@v2.4.1
       with:
         servers: |
