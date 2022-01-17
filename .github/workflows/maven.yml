@@ -272,7 +272,7 @@ jobs:
       with:
         certificate: '${{ secrets.WINDOWS_CERT }}'
         certificatename: '${{ secrets.WINDOWS_CERT_NAME }}'
-        folder: './target/dist/OrionDataClient'
+        folder: './target/dist/CprnXmlValidator'
         password: '${{ secrets.WINDOWS_KEY }}'
         timestampUrl: 'http://timestamp.sectigo.com'
 
