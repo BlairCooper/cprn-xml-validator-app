@@ -291,7 +291,6 @@ jobs:
 
 
   build-windows-installer:
-    if: ${{ false }}  # disable for now
     name: Build Installer on Windows
     runs-on: windows-latest
     needs: [build-test, build-windows-app-image]
@@ -353,7 +352,6 @@ jobs:
 
 
   create-release:
-    if: ${{ false }}  # disable for now
     name: Create Release
     runs-on: ubuntu-latest
     needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-app-image, build-windows-installer]
@@ -361,29 +359,32 @@ jobs:
     steps:
     # DOWNLOAD INSTALLERS
     - name: Download Linux DEB installer
+      if: ${{ false }}  # disable for now
       uses: actions/download-artifact@v2
       with:
         name: linux-deb-installer
 
     - name: Download Linux RPM installer
+      if: ${{ false }}  # disable for now
       uses: actions/download-artifact@v2
       with:
         name: linux-rpm-installer
 
     - name: Download Mac installer
+      if: ${{ false }}  # disable for now
       uses: actions/download-artifact@v2
       with:
         name: mac-installer
+
+    - name: Download Windows app image
+      uses: actions/download-artifact@v2
+      with:
+        name: windows-app-image
 
     - name: Download Windows installer
       uses: actions/download-artifact@v2
       with:
         name: windows-installer
-
-    - name: Download Windows package
-      uses: actions/download-artifact@v2
-      with:
-        name: windows-app-image
 
     - name: Rename downloaded files
       run: |
@@ -404,6 +405,7 @@ jobs:
         prerelease: false
 
     - name: Release Linux DEB installer
+      if: ${{ false }}  # disable for now
       uses: actions/upload-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -414,6 +416,7 @@ jobs:
         asset_content_type: application/x-binary
 
     - name: Release Linux RPM installer
+      if: ${{ false }}  # disable for now
       uses: actions/upload-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -424,6 +427,7 @@ jobs:
         asset_content_type: application/x-binary
 
     - name: Release Mac installer
+      if: ${{ false }}  # disable for now
       uses: actions/upload-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -431,16 +435,6 @@ jobs:
         upload_url: ${{ steps.create-release.outputs.upload_url }}
         asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.dmg
         asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.dmg
-        asset_content_type: application/x-binary
-
-    - name: Release Windows installer
-      uses: actions/upload-release-asset@latest
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
-        asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
         asset_content_type: application/x-binary
 
     - name: Release Windows App Image
@@ -451,4 +445,14 @@ jobs:
         upload_url: ${{ steps.create-release.outputs.upload_url }}
         asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip
         asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip
+        asset_content_type: application/x-binary
+
+    - name: Release Windows installer
+      uses: actions/upload-release-asset@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create-release.outputs.upload_url }}
+        asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
+        asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.msi
         asset_content_type: application/x-binary
