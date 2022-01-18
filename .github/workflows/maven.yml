@@ -354,7 +354,8 @@ jobs:
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
-    needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-app-image, build-windows-installer]
+    needs: [build-test, build-windows-app-image, build-windows-installer]
+#    needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-app-image, build-windows-installer]
 
     steps:
     # DOWNLOAD INSTALLERS
