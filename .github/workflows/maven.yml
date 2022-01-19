@@ -434,7 +434,6 @@ jobs:
         name: linux-rpm-installer
 
     - name: Download Mac installer
-      if: ${{ false }}  # disable for now
       uses: actions/download-artifact@v2
       with:
         name: mac-installer
