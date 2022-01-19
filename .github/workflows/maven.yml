@@ -118,6 +118,59 @@ jobs:
 
 
 
+  build-linux-app-image:
+    if: ${{ false }}  # disable for now
+    name: Build Linux App Image on Ubuntu
+    runs-on: ubuntu-latest
+    needs: [build-test]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '16'
+        distribution: 'adopt'
+        cache: maven
+         # Allows access to our other private repos for dependancies
+
+    - name: Setup Maven Settings
+      uses: s4u/maven-settings-action@v2.4.0
+      with:
+        servers: |
+          [{
+              "id": "maven.github.blair",
+              "username": "${{ secrets.USER_PACKAGE_READ }}",
+              "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
+          }]
+
+    # Create the icon set for use by the application
+    - name: Create Icon Set
+      run: |
+        convert -background transparent icons/cprn-icon1024x1024.png -define icon:auto-resize=16,32,48,64,128,256 -compress zip icons/cprn-lnx.ico
+
+    # BUILD FOR DISTRIBUTION
+    - name: Build distribution
+      run: |
+        mvn -B package --file pom.xml
+        jpackage --verbose --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux-image.cfg"
+
+    - name: Zip App Image
+      run: |
+        tar -cvzf ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gzip ./target/dist/CprnXmlValidator/* 
+
+    # SAVE INSTALLER
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gzip
+        name: linux-app-image
+        retention-days: 1
+
+
+
   build-linux-rpm-installer:
     if: ${{ false }}  # disable for now
     name: Build Linux RPM Installer on Ubuntu
@@ -354,11 +407,16 @@ jobs:
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
-    needs: [build-test, build-windows-app-image, build-windows-installer]
+    needs: [build-test, build-windows-app-image, build-windows-installer, build-linux-app-image]
 #    needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-app-image, build-windows-installer]
 
     steps:
     # DOWNLOAD INSTALLERS
+    - name: Download Linux App Image
+      uses: actions/download-artifact@v2
+      with:
+        name: linux-app-image
+
     - name: Download Linux DEB installer
       if: ${{ false }}  # disable for now
       uses: actions/download-artifact@v2
@@ -404,6 +462,17 @@ jobs:
         release_name: Release ${{ needs.build-test.outputs.release_version }}
         draft: false
         prerelease: false
+
+    - name: Release Linux App Image
+      if: ${{ false }}  # disable for now
+      uses: actions/upload-release-asset@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create-release.outputs.upload_url }}
+        asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gzip
+        asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gzip
+        asset_content_type: application/x-binary
 
     - name: Release Linux DEB installer
       if: ${{ false }}  # disable for now
