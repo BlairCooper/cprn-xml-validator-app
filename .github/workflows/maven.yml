@@ -119,7 +119,6 @@ jobs:
 
 
   build-linux-app-image:
-    if: ${{ false }}  # disable for now
     name: Build Linux App Image on Ubuntu
     runs-on: ubuntu-latest
     needs: [build-test]
@@ -159,13 +158,13 @@ jobs:
 
     - name: Zip App Image
       run: |
-        tar -cvzf ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gzip ./target/dist/CprnXmlValidator/* 
+        tar -cvzf ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gz ./target/dist/CprnXmlValidator/* 
 
     # SAVE INSTALLER
     - name: Upload installer
       uses: actions/upload-artifact@v2
       with:
-        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gzip
+        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gz
         name: linux-app-image
         retention-days: 1
 
@@ -175,7 +174,7 @@ jobs:
     if: ${{ false }}  # disable for now
     name: Build Linux RPM Installer on Ubuntu
     runs-on: ubuntu-latest
-    needs: [build-test]
+    needs: [build-test, build-linux-app-image]
 
     steps:
     - name: Checkout code
@@ -199,6 +198,11 @@ jobs:
               "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
           }]
 
+    - name: Download Windows app image
+      uses: actions/download-artifact@v2
+      with:
+        name: windows-app-image
+
     # Create the icon set for use by the application
     - name: Create Icon Set
       run: |
@@ -207,8 +211,8 @@ jobs:
     # BUILD FOR DISTRIBUTION
     - name: Build distribution
       run: |
-        mvn -B package --file pom.xml
-        jpackage --verbose --type rpm --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
+        tar xvzf ./cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gz -C ./app-image
+        jpackage --app-image ./app-image --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
         mv ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}-1.x86_64.rpm ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.rpm
 
     # SAVE INSTALLER
@@ -470,8 +474,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gzip
-        asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gzip
+        asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gz
+        asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gz
         asset_content_type: application/x-binary
 
     - name: Release Linux DEB installer
