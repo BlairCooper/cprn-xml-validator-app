@@ -105,7 +105,7 @@ jobs:
     - name: Build distribution
       run: |
         mvn -B package --file pom.xml
-        jpackage --verbose --type deb --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
+        jpackage --type deb --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
         mv ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
 
     # SAVE INSTALLER
@@ -154,7 +154,7 @@ jobs:
     - name: Build distribution
       run: |
         mvn -B package --file pom.xml
-        jpackage --verbose --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux-image.cfg"
+        jpackage --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux-image.cfg"
 
     - name: Zip App Image
       run: |
@@ -274,7 +274,7 @@ jobs:
     - name: Build distribution
       run: |
         mvn -B package --file pom.xml
-        jpackage --verbose --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-mac.cfg"
+        jpackage --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-mac.cfg"
         mv ./target/dist/CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.dmg ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.dmg
 
     # SAVE INSTALLER
@@ -320,7 +320,7 @@ jobs:
     - name: Build distribution
       run: |
         mvn -B package --file pom.xml
-        jpackage --verbose --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-windows-image.cfg"
+        jpackage --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-windows-image.cfg"
         attrib -R ./target/dist/CprnXmlValidator/*
 
     - name: Sign executable
