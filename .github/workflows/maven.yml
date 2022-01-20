@@ -158,13 +158,13 @@ jobs:
 
     - name: Zip App Image
       run: |
-        tar -cvzf ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gz ./target/dist/CprnXmlValidator/* 
+        tar -czvf ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz ./target/dist/CprnXmlValidator 
 
     # SAVE INSTALLER
     - name: Upload installer
       uses: actions/upload-artifact@v2
       with:
-        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gz
+        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz
         name: linux-app-image
         retention-days: 1
 
@@ -212,7 +212,7 @@ jobs:
     - name: Build distribution
       run: |
         mkdir ./app-image
-        tar xvzf ./cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gz -C ./app-image
+        tar -xzvf ./cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz -C ./app-image
         jpackage --app-image ./app-image --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
         mv ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}-1.x86_64.rpm ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.rpm
 
@@ -472,8 +472,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gz
-        asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.gz
+        asset_path: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz
+        asset_name: cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz
         asset_content_type: application/x-binary
 
     - name: Release Linux DEB installer
