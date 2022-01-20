@@ -158,7 +158,9 @@ jobs:
 
     - name: Zip App Image
       run: |
-        tar -czvf ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz ./target/dist/CprnXmlValidator 
+        pushd ./target/dist/CprnXmlValidator
+        tar -czvf ../cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz .
+        popd 
 
     # SAVE INSTALLER
     - name: Upload installer
