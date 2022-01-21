@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 import org.beryx.textio.TerminalProperties;
 import org.beryx.textio.TextIO;
@@ -145,7 +146,35 @@ public class Main {
     			
     			 JFileChooser chooser = new JFileChooser();
             	 chooser.setDialogTitle("CPRN XML Validation Tool");
-            	 if (chooser.showSaveDialog(swingTerminal.getFrame()) == JFileChooser.APPROVE_OPTION) {
+            	 chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            	 chooser.setAcceptAllFileFilterUsed(false);
+            	 chooser.addChoosableFileFilter(new FileFilter() {
+
+					@Override
+					public boolean accept(File f) {
+						boolean result = false;
+
+						if (f.isDirectory()) {
+							result = true;
+						}
+						else {
+							String ext = null;
+					        String s = f.getName();
+					        int i = s.lastIndexOf('.');
+
+					        if (i > 0 &&  i < s.length() - 1) {
+					            ext = s.substring(i+1).toLowerCase();
+					        }
+					        result = "xml".equals(ext);
+						}
+
+						return result;
+					}
+
+					@Override
+					public String getDescription() { return "XML Files"; }
+            	 });
+            	 if (chooser.showOpenDialog(swingTerminal.getFrame()) == JFileChooser.APPROVE_OPTION) {
             		 final File fileLocn = chooser.getSelectedFile();
             		 args = new String[] {fileLocn.toString()};
             	 }
