@@ -1,0 +1,2 @@
+${project.name}, version ${project.version}
+Copyright (c) 2021-2022 Cerebarl Palsy Research Network (CPRN), University of Utah - Health System Innovation & Research
