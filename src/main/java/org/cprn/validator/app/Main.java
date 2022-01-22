@@ -27,7 +27,7 @@ import org.cprn.validator.CprnXmlValidator;
 
 public class Main {
 	private static final String INPUT_FILE_PROMPT_BOOKMARK = "filePrompt";
-	private static final String INITIAL_CHOOSER_FOLDER_PROP = "InitialChooserFolder";
+	private static final String INITIAL_CHOOSER_SELECTION = "InitialChooserSelection";
 
 	private boolean printedUsage = false;
 
@@ -132,12 +132,13 @@ public class Main {
 
 			if (isSwingTerminal()) {
 				SwingTextTerminal swingTerminal = (SwingTextTerminal) terminal;
-				String initialFolder = propFile.getProperty(INITIAL_CHOOSER_FOLDER_PROP, "");
+				File initialFile = new File(propFile.getProperty(INITIAL_CHOOSER_SELECTION, ""));
 
-				JFileChooser chooser = new JFileChooser(initialFolder);
+				JFileChooser chooser = new JFileChooser();
 				chooser.setDialogTitle("CPRN XML Validation Tool");
 				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				chooser.setAcceptAllFileFilterUsed(false);
+				chooser.setSelectedFile(initialFile);
 				chooser.addChoosableFileFilter(new FileFilter() {
 					@Override
 					public boolean accept(File f) {
@@ -167,7 +168,7 @@ public class Main {
 				int dlgResponse = chooser.showOpenDialog(swingTerminal.getFrame());
 				if (JFileChooser.APPROVE_OPTION == dlgResponse) {
 					final File fileLocn = chooser.getSelectedFile();
-					propFile.setProperty(INITIAL_CHOOSER_FOLDER_PROP, fileLocn.isDirectory() ? fileLocn.getAbsolutePath() : fileLocn.getParent());
+					propFile.setProperty(INITIAL_CHOOSER_SELECTION, fileLocn.getAbsolutePath());
 					try { propFile.save(); } catch (IOException ioe) {}
 
 					args = new String[] {fileLocn.toString()};
