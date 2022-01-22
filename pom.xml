@@ -131,8 +131,16 @@
 			                        <moduleInfoSource>
 			                            module org.beryx.textio {
 											requires org.slf4j;
-											requires jline;
+											requires org.slf4j.nop
+											requires transitive jline;
+
 			                                exports org.beryx.textio;
+
+											provides org.beryx.textio.TextTerminalProvider with org.beryx.textio.console.ConsoleTextTerminalProvider 
+											provides org.beryx.textio.TextTerminalProvider with org.beryx.textio.jline.JLineTextTerminalProvider 
+											provides org.beryx.textio.TextTerminalProvider with org.beryx.textio.swing.SwingTextTerminalProvider 
+
+											uses org.beryx.textio.TextTerminalProvider;
 			                            }
 			                        </moduleInfoSource>
 			                    </module>
