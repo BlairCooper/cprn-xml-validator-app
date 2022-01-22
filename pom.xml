@@ -130,6 +130,8 @@
 			                        </artifact>
 			                        <moduleInfoSource>
 			                            module org.beryx.textio {
+											requires org.slf4j;
+											requires jline;
 			                                exports org.beryx.textio;
 			                            }
 			                        </moduleInfoSource>
