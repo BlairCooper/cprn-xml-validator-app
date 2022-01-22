@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>org.cprn</groupId>
 			<artifactId>cprn-xml-validator</artifactId>
-			<version>1.0.25</version>
+			<version>1.0.26</version>
 		</dependency>
 		<dependency>
 			<groupId>org.beryx</groupId>
@@ -99,6 +99,7 @@
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
+							<excludeArtifactIds>jakarta.activation-api</excludeArtifactIds>
 						</configuration>
 					</execution>
 				</executions>
