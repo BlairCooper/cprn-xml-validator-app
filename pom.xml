@@ -100,8 +100,9 @@
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
 							<excludeArtifactIds>
-								jakarta.activation-api, <!-- only needed for compile -->
-								jline					 <!-- copied by moditect-maven-plugin -->
+								jakarta.activation-api,	<!-- only needed for compile -->
+								jline,					<!-- copied by moditect-maven-plugin -->
+								text-io					<!-- copied by moditect-maven-plugin -->
 							</excludeArtifactIds>
 						</configuration>
 					</execution>
@@ -121,6 +122,18 @@
 			            <configuration>
 			                <outputDirectory>${project.build.directory}/app</outputDirectory>
 			                <modules>
+			                    <module>
+			                        <artifact>
+			                            <groupId>org.beryx</groupId>
+			                            <artifactId>text-io</artifactId>
+			                            <version>3.4.1</version>
+			                        </artifact>
+			                        <moduleInfoSource>
+			                            module org.beryx.textio {
+			                                exports org.beryx.textio;
+			                            }
+			                        </moduleInfoSource>
+			                    </module>
 			                    <module>
 			                        <artifact>
 			                            <groupId>jline</groupId>
