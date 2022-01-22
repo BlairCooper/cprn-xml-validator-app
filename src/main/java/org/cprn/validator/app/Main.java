@@ -27,35 +27,43 @@ import org.cprn.validator.CprnXmlValidator;
 
 public class Main {
 	private static final String INPUT_FILE_PROMPT_BOOKMARK = "filePrompt";
-	
+	private static final String INITIAL_CHOOSER_FOLDER_PROP = "InitialChooserFolder";
+
 	private boolean printedUsage = false;
 
 	protected TextIO textIO;
 	protected TextTerminal<?> terminal;
 
+	protected AppPropertiesFile propFile;
+
 	public static void main(String[] args) throws IOException {
 		new Main().run(args);
 	}
-	
+
 	public Main() throws IOException {
 		textIO = TextIoFactory.getTextIO();
 		terminal = textIO.getTextTerminal();
-		
+
 		TerminalProperties<?> props = terminal.getProperties();
-		
+
 		Properties props2 = new Properties();
 		props2.load(getClass().getResourceAsStream("/textio.properties"));
-		
+
 		for (Entry<Object, Object> prop : props2.entrySet()) {
 			props.put((String) prop.getKey(), prop.getValue());
 		}
+
+		try {
+			propFile = new AppPropertiesFile();
+		}
+		catch (IOException ioe) {}
 	}
 
 	public void run(String[] args) {
 		boolean bErrorsFound = false;
 		boolean interactiveMode = false;
 
-		displayApplicationInformation(terminal);		
+		displayApplicationInformation(terminal);
 
 		List<String> argList = Arrays.asList(args);
 
@@ -79,7 +87,7 @@ public class Main {
 		} else {
 			printUsage();
 		}
-		
+
 		if (interactiveMode) {
 			// We are in interactive mode so pause before exiting
 			textIO
@@ -93,7 +101,7 @@ public class Main {
 
 		System.exit(bErrorsFound ? 1 : 0);
 	}
-	
+
 	private void printUsage() {
 		if (!printedUsage) {
 			terminal.println(
@@ -110,46 +118,27 @@ public class Main {
 
 	private List<String> readArgsFromConsole() {
 		List<String> argList = new ArrayList<String>();
-    	boolean showError = false;
+		boolean showError = false;
+		boolean keepTrying = true;
 
-/*
-		try (BufferedReader reader = new BufferedReader(
-	            new InputStreamReader(System.in)) )
-		{
-			System.out.print("Enter files and/or folders to validate: ");;
-			String inputLine = reader.readLine();
-			String[] args = inputLine.split(" ");
-			
-			for(String arg : args) {
-				arg = arg.trim();
-				if (arg.length() > 0) {
-					argList.add(arg);
-				}
-			}
-		}
-		catch (IOException e) {
-			terminal.println("Error: " + e.getMessage());
-		}
-*/
+		terminal.setBookmark(INPUT_FILE_PROMPT_BOOKMARK);
 
-    	terminal.setBookmark(INPUT_FILE_PROMPT_BOOKMARK);
-
-    	while (0 == argList.size()) {
+		while (keepTrying) {
 			String[] args = {};
 
-    		if (showError) {
-    			terminal.println("Unable to access file(s) or directory.");
-    		}
+			if (showError) {
+				terminal.println("Unable to access file(s) or directory.");
+			}
 
-    		if (isSwingTerminal()) {
-    			SwingTextTerminal swingTerminal = (SwingTextTerminal) terminal;
-    			
-    			 JFileChooser chooser = new JFileChooser();
-            	 chooser.setDialogTitle("CPRN XML Validation Tool");
-            	 chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            	 chooser.setAcceptAllFileFilterUsed(false);
-            	 chooser.addChoosableFileFilter(new FileFilter() {
+			if (isSwingTerminal()) {
+				SwingTextTerminal swingTerminal = (SwingTextTerminal) terminal;
+				String initialFolder = propFile.getProperty(INITIAL_CHOOSER_FOLDER_PROP, "");
 
+				JFileChooser chooser = new JFileChooser(initialFolder);
+				chooser.setDialogTitle("CPRN XML Validation Tool");
+				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				chooser.setAcceptAllFileFilterUsed(false);
+				chooser.addChoosableFileFilter(new FileFilter() {
 					@Override
 					public boolean accept(File f) {
 						boolean result = false;
@@ -159,13 +148,13 @@ public class Main {
 						}
 						else {
 							String ext = null;
-					        String s = f.getName();
-					        int i = s.lastIndexOf('.');
+							String s = f.getName();
+							int i = s.lastIndexOf('.');
 
-					        if (i > 0 &&  i < s.length() - 1) {
-					            ext = s.substring(i+1).toLowerCase();
-					        }
-					        result = "xml".equals(ext);
+							if (i > 0 &&  i < s.length() - 1) {
+								ext = s.substring(i+1).toLowerCase();
+							}
+							result = "xml".equals(ext);
 						}
 
 						return result;
@@ -173,36 +162,47 @@ public class Main {
 
 					@Override
 					public String getDescription() { return "XML Files"; }
-            	 });
-            	 if (chooser.showOpenDialog(swingTerminal.getFrame()) == JFileChooser.APPROVE_OPTION) {
-            		 final File fileLocn = chooser.getSelectedFile();
-            		 args = new String[] {fileLocn.toString()};
-            	 }
-    		}
-    		else {
+				});
+
+				int dlgResponse = chooser.showOpenDialog(swingTerminal.getFrame());
+				if (JFileChooser.APPROVE_OPTION == dlgResponse) {
+					final File fileLocn = chooser.getSelectedFile();
+					propFile.setProperty(INITIAL_CHOOSER_FOLDER_PROP, fileLocn.isDirectory() ? fileLocn.getAbsolutePath() : fileLocn.getParent());
+					try { propFile.save(); } catch (IOException ioe) {}
+
+					args = new String[] {fileLocn.toString()};
+				}
+				else {
+					terminal.println("Cancelled");
+					keepTrying = false;
+				}
+			}
+			else {
 				String inputLine = textIO.newStringInputReader()
 						.withMinLength(0)	// use 0 length so we can make use of our bookmark
-				        .read("Enter files and/or folders to validate:");
+						.read("Enter files and/or folders to validate:");
 				args = inputLine.split(" ");
-    		}
+			}
 
 			for(String arg : args) {
-				
 				arg = arg.trim();
-				
+
 				if (arg.length() > 0) {
 					Path path = Paths.get(arg);
 					if (Files.exists(path)) {
 						if (Files.isReadable(path) ) {
 							argList.add(arg);
+							keepTrying = false;
 						}
 					}
 				}
 			}
 
-			terminal.resetToBookmark(INPUT_FILE_PROMPT_BOOKMARK);
-	    	showError = true;
-    	}
+			if (keepTrying) {
+				terminal.resetToBookmark(INPUT_FILE_PROMPT_BOOKMARK);
+				showError = true;
+			}
+		}
 
 		return argList;
 	}
@@ -212,21 +212,21 @@ public class Main {
 
 		for(String arg : argList) {
 			File src = new File(arg);
-			
+
 			if (src.isDirectory()) {
 				File[] directoryListing = src.listFiles(new FilenameFilter() {
 					@Override
-				    public boolean accept(File dir, String name) {
+					public boolean accept(File dir, String name) {
 						return name.endsWith(".xml");
-				    }
+					}
 				});
-				
+
 				if (directoryListing != null) {
-				    for (File file : directoryListing) {
-				    	if (!fileList.contains(file)) {
-				    		fileList.add(file);
-				    	}
-				    }
+					for (File file : directoryListing) {
+						if (!fileList.contains(file)) {
+							fileList.add(file);
+						}
+					}
 				}
 			}
 			else if (src.isFile() && !fileList.contains(src)) {
@@ -243,8 +243,8 @@ public class Main {
 	/**
 	 * Display the application information.
 	 */
-    private void displayApplicationInformation(TextTerminal<?> terminal) {
-    	try (InputStream inStrm = Main.class.getResourceAsStream("/version.txt")) {
+	private void displayApplicationInformation(TextTerminal<?> terminal) {
+		try (InputStream inStrm = Main.class.getResourceAsStream("/version.txt")) {
 			if (null != inStrm) {
 				String appStr = new String(inStrm.readAllBytes(), StandardCharsets.UTF_8);
 
@@ -252,9 +252,9 @@ public class Main {
 			}
 		} catch (IOException e) {
 		}
-    }
-    
-    private boolean isSwingTerminal() {
-    	return (terminal instanceof SwingTextTerminal);
-    }
+	}
+
+	private boolean isSwingTerminal() {
+		return (terminal instanceof SwingTextTerminal);
+	}
 }

@@ -5,4 +5,5 @@ module cprn.xml.validator.app {
 	requires jdk.crypto.cryptoki;	// Needed for SSL support, fetching XSDs from server
 	requires org.beryx.textio;
 	requires cprn.xml.validator;
+	requires cprn.java.library;
 }
