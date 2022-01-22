@@ -99,8 +99,10 @@
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
-							<excludeArtifactIds>jakarta.activation-api</excludeArtifactIds> <!-- only needed for compile -->
-							<excludeArtifactIds>jline</excludeArtifactIds> <!-- copied by moditect-maven-plugin -->
+							<excludeArtifactIds>
+								jakarta.activation-api, <!-- only needed for compile -->
+								jline					 <!-- copied by moditect-maven-plugin -->
+							</excludeArtifactIds>
 						</configuration>
 					</execution>
 				</executions>
