@@ -130,15 +130,20 @@
 			                        </artifact>
 			                        <moduleInfoSource>
 			                            module org.beryx.textio {
+											requires java.desktop;
+
 											requires org.slf4j;
-											requires org.slf4j.nop
-											requires transitive jline;
+											requires org.slf4j.nop;
+											requires jline;
+
+											requires org.beryx.awt.color;
 
 			                                exports org.beryx.textio;
-
-											provides org.beryx.textio.TextTerminalProvider with org.beryx.textio.console.ConsoleTextTerminalProvider 
-											provides org.beryx.textio.TextTerminalProvider with org.beryx.textio.jline.JLineTextTerminalProvider 
-											provides org.beryx.textio.TextTerminalProvider with org.beryx.textio.swing.SwingTextTerminalProvider 
+											exports org.beryx.textio.console;
+											exports org.beryx.textio.jline;
+											exports org.beryx.textio.mock;
+											exports org.beryx.textio.swing;
+											exports org.beryx.textio.system;
 
 											uses org.beryx.textio.TextTerminalProvider;
 			                            }
@@ -152,7 +157,11 @@
 			                        </artifact>
 			                        <moduleInfoSource>
 			                            module jline {
+											requires java.desktop;
+
 			                                exports jline;
+											exports jline.console;
+											exports jline.internal;
 			                            }
 			                        </moduleInfoSource>
 			                    </module>
