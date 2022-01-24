@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.beryx.textio.TextIoFactory;
-import org.cprn.validator.CprnXmlValidator;
 
 public class ConsoleApp
 	extends ValidatorApp
@@ -39,11 +38,7 @@ public class ConsoleApp
 				printUsage();
 			}
 			else {
-				for(File file : fileList) {
-					terminal.println(String.format("Validating %s", file.toString()));
-					bErrorsFound |= !CprnXmlValidator.validateFile(file);
-				}
-				terminal.println("Processed " + fileList.size() + " files.");
+				bErrorsFound = validateFiles(fileList);
 			}
 
 			textIO.dispose();

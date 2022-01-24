@@ -17,6 +17,7 @@ import org.beryx.textio.TerminalProperties;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
+import org.cprn.validator.CprnXmlValidator;
 
 abstract class ValidatorApp {
 	protected TextIO textIO;
@@ -136,4 +137,27 @@ abstract class ValidatorApp {
             return true;
         }
     }
+
+    /**
+     * Validate a list of files.
+     * 
+     * @param fileList The list of files to validate
+     * 
+     * @return Returns true of errors were found, otherwise returns false.
+     */
+    protected boolean validateFiles(List<File> fileList) {
+		int errCnt = 0;
+
+		for(File file : fileList) {
+			terminal.println(String.format("Validating %s", file.toString()));
+
+			if (!CprnXmlValidator.validateFile(file)) {
+				errCnt++;
+			}
+		}
+
+		terminal.println(String.format("Processed %d files, of which %d had errors.", fileList.size(), errCnt));
+
+		return 0 != errCnt;
+	}
 }

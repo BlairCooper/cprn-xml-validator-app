@@ -13,7 +13,6 @@ import javax.swing.filechooser.FileFilter;
 
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.swing.SwingTextTerminal;
-import org.cprn.validator.CprnXmlValidator;
 
 public class SwingApp
 	extends ValidatorApp
@@ -50,11 +49,7 @@ public class SwingApp
 				terminal.println("No valid files selected");
 			}
 			else {
-				for(File file : fileList) {
-					terminal.println(String.format("Validating %s", file.toString()));
-					bErrorsFound |= !CprnXmlValidator.validateFile(file);
-				}
-				terminal.println("Processed " + fileList.size() + " files.");
+				bErrorsFound = validateFiles(fileList);
 			}
 	
 			textIO
