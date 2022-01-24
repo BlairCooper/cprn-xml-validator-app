@@ -3,7 +3,7 @@
 
 	<groupId>org.cprn</groupId>
 	<artifactId>cprn-xml-validator-app</artifactId>
-	<version>3.0.18-SNAPSHOT</version>
+	<version>3.0.19-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>CPRN XML Validation Tool</name>
 
