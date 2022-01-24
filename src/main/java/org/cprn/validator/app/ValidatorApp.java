@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -26,9 +25,8 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
-import org.cprn.validator.CprnXmlValidator;
 
-public class Main {
+abstract class ValidatorApp {
 	private static final String INPUT_FILE_PROMPT_BOOKMARK = "filePrompt";
 	private static final String INITIAL_CHOOSER_SELECTION = "InitialChooserSelection";
 
@@ -39,11 +37,7 @@ public class Main {
 
 	protected AppPropertiesFile propFile;
 
-	public static void main(String[] args) throws IOException {
-		new Main().run(args);
-	}
-
-	public Main() {
+	public ValidatorApp() {
 		try {
 			propFile = new AppPropertiesFile();
 		}
@@ -56,7 +50,9 @@ public class Main {
 	 * @param args An array of arguments from the command line if there were
 	 * 		any.
 	 */
-	public void run(String[] args) {
+	public abstract void run(String[] args);
+/*	
+	private void temp() {
 		boolean bErrorsFound = false;
 		boolean interactiveMode = false;
 
@@ -73,6 +69,7 @@ public class Main {
 			}
 		}
 		else {
+//			System.setProperty(TextIoFactory.TEXT_TERMINAL_CLASS_PROPERTY, "org.beryx.textio.system.SystemTextTerminal");
 			System.setProperty(TextIoFactory.TEXT_TERMINAL_CLASS_PROPERTY, "org.beryx.textio.jline.JLineTextTerminal");
 		}
 
@@ -113,7 +110,7 @@ public class Main {
 
 		System.exit(bErrorsFound ? 1 : 0);
 	}
-
+*/
 	/**
 	 * Initialize the terminal we'll be using.
 	 * <p>
@@ -123,7 +120,7 @@ public class Main {
 	 * <p>
 	 * Similarly,Text-IO cannot load the icon from within our module.
 	 */
-	private void initializeTerminal() {
+	protected void initializeTerminal() {
 		textIO = TextIoFactory.getTextIO();
 		terminal = textIO.getTextTerminal();
 
@@ -143,23 +140,6 @@ public class Main {
 	}
 
 	/**
-	 * Print the application usage.
-	 */
-	private void printUsage() {
-		if (!printedUsage) {
-			terminal.println(
-					new StringBuilder()
-					.append("Usage:").append(System.lineSeparator())
-					.append("\tInput files and/or folders can be provided on the command line or entered when prompted.").append(System.lineSeparator())
-					.append("\tProviding multiple files and/or folders is allowed.").append(System.lineSeparator())
-					.append(System.lineSeparator())
-					.append("\tE.g. CprnXmlValidator <input.xml> OR <folder containing XML files>").append(System.lineSeparator())
-					.toString());
-			printedUsage = true;
-		}
-	}
-
-	/**
 	 * Read the file and/or folders from the terminal. The assumption is that
 	 * this method is called because no files or folder were provided on the
 	 * command line.
@@ -171,7 +151,7 @@ public class Main {
 	 * 
 	 * @return A list of files and/or folders to be validate.
 	 */
-	private List<String> readArgsFromConsole() {
+	protected List<String> readArgsFromConsole() {
 		List<String> argList = new ArrayList<String>();
 		boolean showError = false;
 		boolean keepTrying = true;
@@ -271,7 +251,7 @@ public class Main {
 	 *		
 	 * @return A list of files to validated.
 	 */
-	private List<File> buildFileList(List<String> argList) {
+	protected List<File> buildFileList(List<String> argList) {
 		List<File> fileList = new LinkedList<File>();
 
 		for(String arg : argList) {
@@ -307,8 +287,8 @@ public class Main {
 	/**
 	 * Display the application information.
 	 */
-	private void displayApplicationInformation(TextTerminal<?> terminal) {
-		try (InputStream inStrm = Main.class.getResourceAsStream("/version.txt")) {
+	protected void displayApplicationInformation(TextTerminal<?> terminal) {
+		try (InputStream inStrm = ValidatorApp.class.getResourceAsStream("/version.txt")) {
 			if (null != inStrm) {
 				String appStr = new String(inStrm.readAllBytes(), StandardCharsets.UTF_8);
 
@@ -332,7 +312,7 @@ public class Main {
 	 * 
 	 * @return Returns true if the environment is headless, otherwise returns false.
 	 */
-    private static boolean isHeadless() {
+    protected static boolean isHeadless() {
         if (GraphicsEnvironment.isHeadless()) return true;
         try {
             GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
