@@ -26,9 +26,6 @@ public class ConsoleApp
 
 		initializeTerminal();
 
-		terminal.println("Headless: " + isHeadless());
-		terminal.println("System.console: " + Boolean.valueOf(null != System.console()));
-		
 		displayApplicationInformation(terminal);
 		
 		if (0 == fileFolderList.size()) {
