@@ -155,6 +155,8 @@ jobs:
       run: |
         mvn -B package --file pom.xml
         jpackage --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux-image.cfg"
+        cp ./LICENSE ./target/dist/CprnXmlValidator/
+        
 
     - name: Zip App Image
       run: |
@@ -323,6 +325,7 @@ jobs:
       run: |
         mvn -B package --file pom.xml
         jpackage --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-windows-image.cfg"
+        copy ./LICENSE ./target/dist/CprnXmlValidator/
         attrib -R ./target/dist/CprnXmlValidator/*
 
     - name: Sign executable
