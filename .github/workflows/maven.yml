@@ -127,7 +127,7 @@ jobs:
   build-linux-deb-installer:
     name: Build Linux DEB Installer on Ubuntu
     runs-on: ubuntu-latest
-    needs: [build-test]
+    needs: [build-test, build-linux-app-image]
 
     steps:
     - name: Checkout code
@@ -341,7 +341,7 @@ jobs:
         certificatename: '${{ secrets.WINDOWS_CERT_NAME }}'
         folder: './target/dist/CprnXmlValidator'
         password: '${{ secrets.WINDOWS_KEY }}'
-        timestampUrl: 'http://timestamp.sectigo.com?td=sha256'
+        timestampUrl: 'http://timestamp.sectigo.com'
 
     - name: Zip App Image
       run: |
@@ -407,7 +407,7 @@ jobs:
         certificatename: '${{ secrets.WINDOWS_CERT_NAME }}'
         folder: './target/dist/'
         password: '${{ secrets.WINDOWS_KEY }}'
-        timestampUrl: 'http://timestamp.sectigo.com?td=sha256'
+        timestampUrl: 'http://timestamp.sectigo.com'
 
     # SAVE INSTALLER
     - name: Upload installer
