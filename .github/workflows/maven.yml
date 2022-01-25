@@ -171,8 +171,7 @@ jobs:
       run: |
         mkdir ./app-image
         tar -xzvf ./cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz -C ./app-image
-        jpackage --app-image ./app-image --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
-        jpackage --type deb --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
+        jpackage --type deb --app-image ./app-image --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
         mv ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
 
     # SAVE INSTALLER
