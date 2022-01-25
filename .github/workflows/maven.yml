@@ -130,6 +130,11 @@ jobs:
     needs: [build-test, build-linux-app-image]
 
     steps:
+    - name: Install additional code
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install libfreetype6 libx11-6
+      
     - name: Checkout code
       uses: actions/checkout@v2
 
