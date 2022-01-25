@@ -103,6 +103,7 @@ jobs:
     # BUILD FOR DISTRIBUTION
     - name: Build distribution
       run: |
+        sed -i 's/'\$\{project.version\}'/${{ needs.build-test.outputs.release_version }}/g' ./src/main/resources/version.txt
         mvn -B package --file pom.xml
         jpackage --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux-image.cfg"
         cp ./LICENSE ./target/dist/CprnXmlValidator/
@@ -286,6 +287,7 @@ jobs:
     # BUILD FOR DISTRIBUTION
     - name: Build distribution
       run: |
+        (Get-Content ./src/main/resources/version.txt).replace('${project.version}', '${{ needs.build-test.outputs.release_version }}') | Set-Content ./src/main/resources/version.txt
         mvn -B package --file pom.xml
         jpackage --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-mac.cfg"
         mv ./target/dist/CprnXmlValidator-${{ needs.build-test.outputs.release_version }}.dmg ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.dmg
