@@ -488,7 +488,6 @@ jobs:
         asset_content_type: application/x-binary
 
     - name: Release Linux DEB installer
-      if: ${{ false }}  # disable for now
       uses: actions/upload-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -499,7 +498,6 @@ jobs:
         asset_content_type: application/x-binary
 
     - name: Release Linux RPM installer
-      if: ${{ false }}  # disable for now
       uses: actions/upload-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
