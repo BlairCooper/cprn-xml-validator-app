@@ -4,4 +4,4 @@
 
 mvn clean package
 
-$JAVA_HOME\bin\jpackage --verbose --app-version 99.0.1 "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux-image.cfg" 
+jpackage --verbose --app-version 99.0.1 "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux-image.cfg" 

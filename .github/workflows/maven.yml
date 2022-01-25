@@ -68,56 +68,6 @@ jobs:
 
 
 
-  build-linux-deb-installer:
-    if: ${{ false }}  # disable for now
-    name: Build Linux DEB Installer on Ubuntu
-    runs-on: ubuntu-latest
-    needs: [build-test]
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
-        java-version: '16'
-        distribution: 'adopt'
-        cache: maven
-         # Allows access to our other private repos for dependancies
-         
-    - name: Setup Maven Settings
-      uses: s4u/maven-settings-action@v2.4.1
-      with:
-        servers: |
-          [{
-              "id": "maven.github.blair",
-              "username": "${{ secrets.USER_PACKAGE_READ }}",
-              "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
-          }]
-
-    # Create the icon set for use by the application
-    - name: Create Icon Set
-      run: |
-        convert -background transparent icons/cprn-icon1024x1024.png -define icon:auto-resize=16,32,48,64,128,256 -compress zip icons/cprn-lnx.ico
-
-    # BUILD FOR DISTRIBUTION
-    - name: Build distribution
-      run: |
-        mvn -B package --file pom.xml
-        jpackage --type deb --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
-        mv ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
-
-    # SAVE INSTALLER
-    - name: Upload installer
-      uses: actions/upload-artifact@v2
-      with:
-        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
-        name: linux-deb-installer
-        retention-days: 1
-
-
-
   build-linux-app-image:
     name: Build Linux App Image on Ubuntu
     runs-on: ubuntu-latest
@@ -161,7 +111,7 @@ jobs:
     - name: Zip App Image
       run: |
         pushd ./target/dist/CprnXmlValidator
-        tar -czvf ../cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz .
+        tar -czvf ../cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz *
         popd 
 
     # SAVE INSTALLER
@@ -174,8 +124,67 @@ jobs:
 
 
 
+  build-linux-deb-installer:
+    name: Build Linux DEB Installer on Ubuntu
+    runs-on: ubuntu-latest
+    needs: [build-test, build-linux-app-image]
+
+    steps:
+    - name: Install additional code
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install libfreetype6 libx11-6
+      
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '16'
+        distribution: 'adopt'
+        cache: maven
+         # Allows access to our other private repos for dependancies
+         
+    - name: Setup Maven Settings
+      uses: s4u/maven-settings-action@v2.4.1
+      with:
+        servers: |
+          [{
+              "id": "maven.github.blair",
+              "username": "${{ secrets.USER_PACKAGE_READ }}",
+              "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
+          }]
+
+    - name: Download Linux app image
+      uses: actions/download-artifact@v2
+      with:
+        name: linux-app-image
+
+    # Create the icon set for use by the application
+    - name: Create Icon Set
+      run: |
+        convert -background transparent icons/cprn-icon1024x1024.png -define icon:auto-resize=16,32,48,64,128,256 -compress zip icons/cprn-lnx.ico
+
+    # BUILD FOR DISTRIBUTION
+    - name: Build distribution
+      run: |
+        mkdir ./app-image
+        tar -xzvf ./cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz -C ./app-image
+        jpackage --type deb --app-image ./app-image --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
+        mv ./target/dist/cprn-xml-validator_${{ needs.build-test.outputs.release_version }}-1_amd64.deb ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
+
+    # SAVE INSTALLER
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.deb
+        name: linux-deb-installer
+        retention-days: 1
+
+
+
   build-linux-rpm-installer:
-    if: ${{ false }}  # disable for now
     name: Build Linux RPM Installer on Ubuntu
     runs-on: ubuntu-latest
     needs: [build-test, build-linux-app-image]
@@ -202,10 +211,10 @@ jobs:
               "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
           }]
 
-    - name: Download Windows app image
+    - name: Download Linux app image
       uses: actions/download-artifact@v2
       with:
-        name: windows-app-image
+        name: linux-app-image
 
     # Create the icon set for use by the application
     - name: Create Icon Set
@@ -217,7 +226,7 @@ jobs:
       run: |
         mkdir ./app-image
         tar -xzvf ./cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.tar.gz -C ./app-image
-        jpackage --app-image ./app-image --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
+        jpackage --type rpm --app-image ./app-image --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux.cfg"
         mv ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}-1.x86_64.rpm ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.rpm
 
     # SAVE INSTALLER
@@ -416,8 +425,7 @@ jobs:
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
-    needs: [build-test, build-windows-app-image, build-windows-installer, build-linux-app-image, build-mac-installer]
-#    needs: [build-test, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer, build-windows-app-image, build-windows-installer]
+    needs: [build-test, build-windows-app-image, build-windows-installer, build-linux-app-image, build-linux-deb-installer, build-linux-rpm-installer, build-mac-installer]
 
     steps:
     # DOWNLOAD INSTALLERS
@@ -427,13 +435,11 @@ jobs:
         name: linux-app-image
 
     - name: Download Linux DEB installer
-      if: ${{ false }}  # disable for now
       uses: actions/download-artifact@v2
       with:
         name: linux-deb-installer
 
     - name: Download Linux RPM installer
-      if: ${{ false }}  # disable for now
       uses: actions/download-artifact@v2
       with:
         name: linux-rpm-installer
@@ -482,7 +488,6 @@ jobs:
         asset_content_type: application/x-binary
 
     - name: Release Linux DEB installer
-      if: ${{ false }}  # disable for now
       uses: actions/upload-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -493,7 +498,6 @@ jobs:
         asset_content_type: application/x-binary
 
     - name: Release Linux RPM installer
-      if: ${{ false }}  # disable for now
       uses: actions/upload-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
