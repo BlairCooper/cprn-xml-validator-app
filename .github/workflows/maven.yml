@@ -240,59 +240,6 @@ jobs:
 
 
 
-  build-mac-app-image:
-    name: Build MacOS App Image
-    runs-on: macos-latest
-    needs: [build-test]
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
-        java-version: '16'
-        distribution: 'adopt'
-        cache: maven
-         # Allows access to our other private repos for dependancies
-
-    - name: Setup Maven Settings
-      uses: s4u/maven-settings-action@v2.4.0
-      with:
-        servers: |
-          [{
-              "id": "maven.github.blair",
-              "username": "${{ secrets.USER_PACKAGE_READ }}",
-              "password": "${{ secrets.TOKEN_PACKAGE_READ }}"
-          }]
-
-    # BUILD FOR DISTRIBUTION
-    - name: Build distribution
-      run: |
-        sed -i '' "s/\${project.version}/${{ needs.build-test.outputs.release_version }}/g" ./src/main/resources/version.txt
-        mvn -B package --file pom.xml
-        jpackage --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-mac-image.cfg"
-        codesign -f -s - --deep ./target/dist/CprnXmlValidator.app
-        cp ./LICENSE ./target/dist/CprnXmlValidator/
-        
-
-    - name: Zip App Image
-      run: |
-        pushd ./target/dist
-        tar -czvf ../cprn-xml-validator-mac-${{ needs.build-test.outputs.release_version }}.tar.gz CprnXmlValidator.app
-        popd
-
-    # SAVE INSTALLER
-    - name: Upload installer
-      uses: actions/upload-artifact@v2
-      with:
-        path: ./target/dist/cprn-xml-validator-mac-${{ needs.build-test.outputs.release_version }}.tar.gz
-        name: macos-app-image
-        retention-days: 1
-
-
-
   build-mac-installer:
     name: Build Macintosh Installer
     runs-on: macos-latest
