@@ -270,7 +270,7 @@ jobs:
     # BUILD FOR DISTRIBUTION
     - name: Build distribution
       run: |
-        sed -i 's/'\$\{project.version\}'/${{ needs.build-test.outputs.release_version }}/g' ./src/main/resources/version.txt
+        sed -i '' "s/\${project.version}/${{ needs.build-test.outputs.release_version }}/g" ./src/main/resources/version.txt
         mvn -B package --file pom.xml
         jpackage --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-mac-image.cfg"
         codesign -f -s - --deep ./target/dist/CprnXmlValidator.app
@@ -322,7 +322,7 @@ jobs:
 
     # Create the icon set for use by the application
     - name: Create Icon Set
-      if: {{false}}
+      if: ${{ false }}
       run: |
         mkdir icons.iconset
         cp icons/cprn-icon1024x1024.png icons.iconset/icon_512x512@2x.png
