@@ -3,7 +3,7 @@
 
 	<groupId>org.cprn</groupId>
 	<artifactId>cprn-xml-validator-app</artifactId>
-	<version>3.0.36-SNAPSHOT</version>
+	<version>3.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>CPRN XML Validation Tool</name>
 
@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>org.cprn</groupId>
 			<artifactId>cprn-xml-validator</artifactId>
-			<version>1.0.26</version>
+			<version>3.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.beryx</groupId>
