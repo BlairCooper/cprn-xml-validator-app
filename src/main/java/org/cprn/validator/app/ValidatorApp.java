@@ -102,7 +102,7 @@ abstract class ValidatorApp {
 				fileList.add(src);
 			}
 			else if (!src.exists()) {
-				terminal.println(String.format("The specified file (%s) doees not exist", arg));
+				terminal.println(String.format("The specified file (%s) does not exist", arg));
 			}
 		}
 
