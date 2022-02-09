@@ -352,6 +352,11 @@ jobs:
         password: '${{ secrets.WINDOWS_KEY }}'
         timestampUrl: 'http://timestamp.sectigo.com'
 
+    - name: Add cprn.org certificate to truststore
+      run : |
+        openssl s_client -showcerts -connect cprn.org:443 < /dev/null | openssl x509 -outform DER > cprn-org.der
+        keytool -importcert -trustcacerts -alias cprn-org -file cprn-org.der -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/carcets -storepass changeit -noprompt
+    
     - name: Zip App Image
       run: |
         Compress-Archive -Path ./target/dist/CprnXmlValidator/* -DestinationPath ./target/dist/cprn-xml-validator-${{ needs.build-test.outputs.release_version }}.zip
