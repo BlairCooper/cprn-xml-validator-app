@@ -354,7 +354,7 @@ jobs:
 
     - name: Add cprn.org certificate to truststore
       run : |
-        openssl s_client -showcerts -connect cprn.org:443 < /dev/null | openssl x509 -outform DER > cprn-org.der
+        openssl s_client -showcerts -connect cprn.org:443 | openssl x509 -outform DER > cprn-org.der
         keytool -importcert -trustcacerts -alias cprn-org -file cprn-org.der -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/carcets -storepass changeit -noprompt
     
     - name: Zip App Image
