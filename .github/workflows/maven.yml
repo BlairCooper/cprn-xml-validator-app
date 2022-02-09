@@ -354,11 +354,8 @@ jobs:
 
     - name: Add cprn.org certificate to truststore
       run : |
-        # echo "" | openssl s_client -connect cprn.org:443 -servername cprn.org | sed -n '/-----BEGIN/,/-----END/p' | openssl x509 -outform DER >cprn-org.der
-        # openssl s_client -showcerts -connect cprn.org:443 -servername cprn.org <nul|openssl x509 -outform DER > cprn-org.der
-        # openssl x509 -infile cprn-org.crt -outform DER > cprn.der
-        keytool -importcert -trustcacerts -alias isrg-root-x1 -file ISRG-Root-X1.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/carcets -storepass changeit -noprompt
-        keytool -importcert -trustcacerts -alias isrg-root-x1-r3 -file ISRG-Root-X1-R3.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/carcets -storepass changeit -noprompt
+        keytool -importcert -trustcacerts -alias isrg-root-x1 -file ISRG-Root-X1.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
+        keytool -importcert -trustcacerts -alias isrg-root-x1-r3 -file ISRG-Root-X1-R3.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
     
     - name: Zip App Image
       run: |
