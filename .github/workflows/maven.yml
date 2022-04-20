@@ -110,9 +110,9 @@ jobs:
         
     - name: Add cprn.org certificate to truststore
       run: |
-        cp ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts-orig
+        cp ./target/dist/CprnXmlValidator/lib/runtime/lib/security/cacerts ./target/dist/CprnXmlValidator/lib/runtime/lib/security/cacerts-orig
         wget https://letsencrypt.org/certs/lets-encrypt-r3.der
-        keytool -importcert -trustcacerts -alias letsencryptauthorityx3 -file lets-encrypt-r3.der -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
+        keytool -importcert -trustcacerts -alias letsencryptauthorityx3 -file lets-encrypt-r3.der -keystore ./target/dist/CprnXmlValidator/lib/runtime/lib/security/cacerts -storepass changeit -noprompt
         # keytool -importcert -trustcacerts -alias isrg-root-x1 -file ISRG-Root-X1.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
         # keytool -importcert -trustcacerts -alias isrg-root-x1-r3 -file ISRG-Root-X1-R3.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
 
@@ -361,8 +361,11 @@ jobs:
 
     - name: Add cprn.org certificate to truststore
       run : |
-        keytool -importcert -trustcacerts -alias isrg-root-x1 -file ISRG-Root-X1.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
-        keytool -importcert -trustcacerts -alias isrg-root-x1-r3 -file ISRG-Root-X1-R3.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
+        cp ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts-orig
+        wget https://letsencrypt.org/certs/lets-encrypt-r3.der
+        keytool -importcert -trustcacerts -alias letsencryptauthorityx3 -file lets-encrypt-r3.der -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
+        # keytool -importcert -trustcacerts -alias isrg-root-x1 -file ISRG-Root-X1.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
+        # keytool -importcert -trustcacerts -alias isrg-root-x1-r3 -file ISRG-Root-X1-R3.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
     
     - name: Zip App Image
       run: |
