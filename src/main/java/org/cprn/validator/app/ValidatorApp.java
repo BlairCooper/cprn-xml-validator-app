@@ -112,15 +112,19 @@ abstract class ValidatorApp {
 	/**
 	 * Display the application information.
 	 */
-	protected void displayApplicationInformation(TextTerminal<?> terminal) {
+	protected String displayApplicationInformation(TextTerminal<?> terminal) {
+		String versionInfo = null;
+
 		try (InputStream inStrm = ValidatorApp.class.getResourceAsStream("/version.txt")) {
 			if (null != inStrm) {
-				String appStr = new String(inStrm.readAllBytes(), StandardCharsets.UTF_8);
+				versionInfo = new String(inStrm.readAllBytes(), StandardCharsets.UTF_8);
 
-				terminal.println(appStr);
+				terminal.println(versionInfo);
 			}
 		} catch (IOException e) {
 		}
+
+		return versionInfo;
 	}
 
 	/**
@@ -145,13 +149,13 @@ abstract class ValidatorApp {
      * 
      * @return Returns true of errors were found, otherwise returns false.
      */
-    protected boolean validateFiles(List<File> fileList) {
+    protected boolean validateFiles(List<File> fileList, String versionInfo) {
 		int errCnt = 0;
 
 		for(File file : fileList) {
 			terminal.println(String.format("Validating %s", file.toString()));
 
-			if (!CprnXmlValidator.validateFile(file)) {
+			if (!CprnXmlValidator.validateFile(file, versionInfo)) {
 				errCnt++;
 			}
 		}

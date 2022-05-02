@@ -39,7 +39,7 @@ public class SwingApp
 			// the terminal.
 			initializeTerminal();
 	
-			displayApplicationInformation(terminal);
+			String versionInfo = displayApplicationInformation(terminal);
 	
 			List<String> fileFolderList = readArgsFromConsole();
 	
@@ -49,7 +49,7 @@ public class SwingApp
 				terminal.println("No valid files selected");
 			}
 			else {
-				bErrorsFound = validateFiles(fileList);
+				bErrorsFound = validateFiles(fileList, versionInfo);
 			}
 	
 			textIO
