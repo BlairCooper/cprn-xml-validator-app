@@ -4,9 +4,12 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +27,7 @@ abstract class ValidatorApp {
 	protected TextTerminal<?> terminal;
 
 	protected AppPropertiesFile propFile;
+	protected boolean debugSSL = false;
 
 	public ValidatorApp() {
 		try {
@@ -39,6 +43,15 @@ abstract class ValidatorApp {
 	 * 		any.
 	 */
 	public abstract void run(String[] args);
+
+	protected void processArgs(String[] args) {
+		for(String arg : args) {
+			if (arg.toLowerCase().contains("-debugssl")) {
+				debugSSL = true;
+				System.setProperty("javax.net.debug", "all");
+			}
+		}
+	}
 
 	/**
 	 * Initialize the terminal we'll be using.
@@ -154,6 +167,16 @@ abstract class ValidatorApp {
 
 		for(File file : fileList) {
 			terminal.println(String.format("Validating %s", file.toString()));
+
+			if (debugSSL) {
+				try {
+					PrintStream printStream = new PrintStream(new FileOutputStream(file.getPath() + "-sysout.log"));
+					System.setOut(printStream);
+					System.setErr(printStream);
+				}
+				catch (FileNotFoundException e) {
+				}
+			}
 
 			if (!CprnXmlValidator.validateFile(file, versionInfo)) {
 				errCnt++;

@@ -28,6 +28,8 @@ public class SwingApp
 	public void run(String[] args) {
 		boolean bErrorsFound = false;
 
+		processArgs(args);
+
 		System.setProperty(TextIoFactory.TEXT_TERMINAL_CLASS_PROPERTY, "org.beryx.textio.swing.SwingTextTerminal");
 		
 		if (isHeadless()) {
