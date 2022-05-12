@@ -115,6 +115,8 @@ jobs:
         wget https://letsencrypt.org/certs/lets-encrypt-r4.der	# Backup Intermediate Certificates
         keytool -importcert -trustcacerts -alias letsencryptauthorityr3 -file lets-encrypt-r3.der -keystore ./target/dist/CprnXmlValidator/lib/runtime/lib/security/cacerts -storepass changeit -noprompt
         keytool -importcert -trustcacerts -alias letsencryptauthorityr4 -file lets-encrypt-r4.der -keystore ./target/dist/CprnXmlValidator/lib/runtime/lib/security/cacerts -storepass changeit -noprompt
+        # install the Zscaler root certificate (Used at Pheonix Children's Hosptital)
+        keytool -importcert -trustcacerts -alias ZscalerRoot -file certificates/ZscalerRootCertificate-2048-SHA256.crt -keystore ./target/dist/CprnXmlValidator/lib/runtime/lib/security/cacerts -storepass changeit -noprompt
         # keytool -importcert -trustcacerts -alias isrg-root-x1 -file ISRG-Root-X1.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
         # keytool -importcert -trustcacerts -alias isrg-root-x1-r3 -file ISRG-Root-X1-R3.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
 
@@ -368,6 +370,8 @@ jobs:
         Invoke-WebRequest https://letsencrypt.org/certs/lets-encrypt-r4.der -OutFile lets-encrypt-r4.der # Backup Intermediate Certificates
         keytool -importcert -trustcacerts -alias letsencryptauthorityr3 -file lets-encrypt-r3.der -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
         keytool -importcert -trustcacerts -alias letsencryptauthorityr4 -file lets-encrypt-r4.der -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
+        # install the Zscaler root certificate (Used at Pheonix Children's Hosptital)
+        keytool -importcert -trustcacerts -alias ZscalerRoot -file certificates/ZscalerRootCertificate-2048-SHA256.crt -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
         # keytool -importcert -trustcacerts -alias isrg-root-x1 -file ISRG-Root-X1.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
         # keytool -importcert -trustcacerts -alias isrg-root-x1-r3 -file ISRG-Root-X1-R3.cer -keystore ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts -storepass changeit -noprompt
     
