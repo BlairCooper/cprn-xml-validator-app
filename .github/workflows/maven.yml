@@ -108,7 +108,7 @@ jobs:
         jpackage --app-version ${{ needs.build-test.outputs.release_version }} "@jpackage/jpackage.cfg" "@jpackage/jpackage-linux-image.cfg"
         cp ./LICENSE ./target/dist/CprnXmlValidator/
         
-    - name: Add cprn.org certificate to truststore
+    - name: Add certificates to truststore
       run: |
         # cp ./target/dist/CprnXmlValidator/lib/runtime/lib/security/cacerts ./target/dist/CprnXmlValidator/lib/runtime/lib/security/cacerts-orig
         wget https://letsencrypt.org/certs/lets-encrypt-r3.der	# Primary Intermediate Certificates
@@ -363,7 +363,7 @@ jobs:
         password: '${{ secrets.WINDOWS_KEY }}'
         timestampUrl: 'http://timestamp.sectigo.com'
 
-    - name: Add cprn.org certificate to truststore
+    - name: Add certificates to truststore
       run : |
         # copy ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts ./target/dist/CprnXmlValidator/runtime/lib/security/cacerts-orig
         Invoke-WebRequest https://letsencrypt.org/certs/lets-encrypt-r3.der -OutFile lets-encrypt-r3.der # Primary Intermediate Certificates
