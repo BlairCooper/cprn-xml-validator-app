@@ -10,11 +10,14 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.beryx.textio.TerminalProperties;
 import org.beryx.textio.TextIO;
@@ -22,12 +25,21 @@ import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
 import org.cprn.validator.CprnXmlValidator;
 
+import com.fasterxml.jackson.core.Version;
+
+
 abstract class ValidatorApp {
 	protected TextIO textIO;
 	protected TextTerminal<?> terminal;
 
 	protected AppPropertiesFile propFile;
 	protected boolean debugSSL = false;
+
+	protected String versionText;
+	protected Version localVersion;
+	protected Version serverVersion;
+
+	private final Pattern versionRegexPattern = Pattern.compile("([1-9])\\.([1-9][0-9]?)\\.([1-9][0-9]{0,2})");
 
 	public ValidatorApp() {
 		try {
@@ -51,6 +63,8 @@ abstract class ValidatorApp {
 				System.setProperty("javax.net.debug", "all");
 			}
 		}
+
+		initVersionInfo();
 	}
 
 	/**
@@ -122,22 +136,42 @@ abstract class ValidatorApp {
 		return fileList;
 	}
 
-	/**
-	 * Display the application information.
-	 */
-	protected String displayApplicationInformation(TextTerminal<?> terminal) {
-		String versionInfo = null;
-
+	protected void initVersionInfo() {
 		try (InputStream inStrm = ValidatorApp.class.getResourceAsStream("/version.txt")) {
 			if (null != inStrm) {
-				versionInfo = new String(inStrm.readAllBytes(), StandardCharsets.UTF_8);
+				versionText = new String(inStrm.readAllBytes(), StandardCharsets.UTF_8);
 
-				terminal.println(versionInfo);
+				Matcher matcher = versionRegexPattern.matcher(versionText);
+				if (matcher.find() && 3 == matcher.groupCount()) {
+					localVersion = new Version(Integer.valueOf(matcher.group(1)), Integer.valueOf(matcher.group(2)), Integer.valueOf(matcher.group(3)), null, null, null);
+
+					URL url = new URL("https://cprn.org/wp-admin/admin-ajax.php?action=fetchValidationToolVersion");
+					try (InputStream in = url.openStream()) {
+						matcher = versionRegexPattern.matcher(new String(in.readAllBytes(), StandardCharsets.UTF_8));
+						if (matcher.find() && 3 == matcher.groupCount()) {
+							serverVersion = new Version(Integer.valueOf(matcher.group(1)), Integer.valueOf(matcher.group(2)), Integer.valueOf(matcher.group(3)), null, null, null);
+						}
+					}
+					catch (IOException e) {
+					}
+				}
 			}
 		} catch (IOException e) {
 		}
+	}
 
-		return versionInfo;
+	/**
+	 * Display the application information.
+	 */
+	protected void displayApplicationInformation(TextTerminal<?> terminal) {
+		terminal.println(versionText);
+
+		if (serverVersion.compareTo(localVersion) > 0) {
+			terminal.executeWithPropertiesConfigurator(
+			        props -> props.setPromptColor("yellow"),
+			        t -> t.println("A newer version of the CPRN Validation Tool is avabile. Please visit https://cprn.org/research/cprn-data-collection/ to retrieve it."));
+			terminal.println();
+		}
 	}
 
 	/**

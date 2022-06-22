@@ -41,7 +41,7 @@ public class SwingApp
 			// the terminal.
 			initializeTerminal();
 	
-			String versionInfo = displayApplicationInformation(terminal);
+			displayApplicationInformation(terminal);
 	
 			List<String> fileFolderList = readArgsFromConsole();
 	
@@ -51,7 +51,7 @@ public class SwingApp
 				terminal.println("No valid files selected");
 			}
 			else {
-				bErrorsFound = validateFiles(fileList, versionInfo);
+				bErrorsFound = validateFiles(fileList, versionText);
 			}
 	
 			textIO

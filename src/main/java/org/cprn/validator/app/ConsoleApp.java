@@ -27,7 +27,7 @@ public class ConsoleApp
 
 		initializeTerminal();
 
-		String versionInfo = displayApplicationInformation(terminal);
+		displayApplicationInformation(terminal);
 		
 		if (0 == fileFolderList.size()) {
 			printUsage();
@@ -40,7 +40,7 @@ public class ConsoleApp
 				printUsage();
 			}
 			else {
-				bErrorsFound = validateFiles(fileList, versionInfo);
+				bErrorsFound = validateFiles(fileList, versionText);
 			}
 
 			textIO.dispose();
