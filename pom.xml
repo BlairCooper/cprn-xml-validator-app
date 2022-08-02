@@ -13,7 +13,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.scm.id>github</project.scm.id>
 	    <maven.javadoc.skip>true</maven.javadoc.skip>
-	    <cprn-xml-validator.version>3.1.21</cprn-xml-validator.version>
+	    <cprn-xml-validator.version>3.1.22</cprn-xml-validator.version>
 	</properties>
 	
 	<repositories>
@@ -107,6 +107,7 @@
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
+                            <includeScope>runtime</includeScope>
 							<excludeArtifactIds>
 								jakarta.activation-api,	<!-- only needed for compile -->
 								jline,					<!-- copied by moditect-maven-plugin -->
